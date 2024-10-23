@@ -6,10 +6,10 @@ find_package(Qt${QT_VERSION_MAJOR}
 	    Core
 )
 
-file(GLOB core_SRC "*h" "*cpp")
+file(GLOB core_SRC "include/*h" "src/*cpp")
 
 add_library(${PROJECT_NAME} STATIC ${core_SRC})
 
-target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt::Core)
