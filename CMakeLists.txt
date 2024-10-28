@@ -11,4 +11,5 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widget Test)
 
 add_subdirectory(kernel)
 add_subdirectory(core)
+add_subdirectory(modules)
 add_subdirectory(test)

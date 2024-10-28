@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-class UserTest  : public QObject
+class UserTest : public QObject
 {
 	Q_OBJECT
 
@@ -11,5 +11,5 @@ public:
 
 private slots:
 	void initTest();
-	void testForTest();
+	void copyConstractorTest();
 };

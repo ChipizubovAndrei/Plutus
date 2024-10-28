@@ -1,6 +1,7 @@
 #include "UserTest.h"
 
 #include <QTest>
+#include <QSharedPointer>
 
 #include <User.h>
 
@@ -14,9 +15,11 @@ void UserTest::initTest()
 	QCOMPARE(QString("Andrei"), user.getName());
 }
 
-void UserTest::testForTest()
+void UserTest::copyConstractorTest()
 {
-	QCOMPARE(1, 1);
+	QSharedPointer<User> userOriginal = QSharedPointer<User>(new User ("Andrei"));
+	QSharedPointer<User> userCopy(userOriginal);
+	QCOMPARE(userOriginal.data(), userCopy.data());
 }
 
 QTEST_MAIN(UserTest)

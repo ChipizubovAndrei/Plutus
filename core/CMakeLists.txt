@@ -6,7 +6,7 @@ find_package(Qt${QT_VERSION_MAJOR}
 	    Core
 )
 
-file(GLOB core_SRC "include/*h" "src/*cpp")
+file(GLOB core_SRC "include/*.h" "src/*.cpp")
 
 add_library(${PROJECT_NAME} STATIC ${core_SRC})
 
