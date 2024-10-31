@@ -3,4 +3,5 @@
 MoneyOperationTableView::MoneyOperationTableView(QWidget *parent)
 	: QTableView(parent)
 {
+	setEditTriggers(QAbstractItemView::NoEditTriggers);
 }

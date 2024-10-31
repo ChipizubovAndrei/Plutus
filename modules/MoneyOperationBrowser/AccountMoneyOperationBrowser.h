@@ -1,6 +1,10 @@
 #pragma once
 
 #include <QWidget>
+#include <QPushButton>
+
+#include <MoneyOperationTableModel.h>
+#include <MoneyOperationTableView.h>
 
 class AccountMoneyOperationBrowser : public QWidget
 {
@@ -8,4 +12,10 @@ class AccountMoneyOperationBrowser : public QWidget
 
 public:
 	AccountMoneyOperationBrowser(QWidget *parent);
+
+private:
+	MoneyOperationTableView* mViewAccountOperationTable;
+	MoneyOperationTableModel* mModelAccountOperationTable;
+	QPushButton* mAddOperationButton;
+	QPushButton* mRemoveOperationButton;
 };
