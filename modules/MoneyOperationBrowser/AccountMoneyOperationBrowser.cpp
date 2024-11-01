@@ -13,6 +13,11 @@ AccountMoneyOperationBrowser::AccountMoneyOperationBrowser(QWidget *parent)
 	mAddOperationButton = new QPushButton(QStringLiteral("Add"), this);
 	mRemoveOperationButton = new QPushButton(QStringLiteral("Remove"), this);
 
+	connect(mAddOperationButton, &QPushButton::clicked,
+		this, &AccountMoneyOperationBrowser::onAddedButtonClicked);
+	connect(mRemoveOperationButton, &QPushButton::clicked,
+		this, &AccountMoneyOperationBrowser::onRemoveButtonClicked);
+
 	QVBoxLayout* vLayout = new QVBoxLayout(this);
 	vLayout->addWidget(mViewAccountOperationTable);
 
@@ -22,4 +27,13 @@ AccountMoneyOperationBrowser::AccountMoneyOperationBrowser(QWidget *parent)
 
 	vLayout->addLayout(buttonLayout);
 
+}
+
+void AccountMoneyOperationBrowser::onAddedButtonClicked()
+{
+
+}
+
+void AccountMoneyOperationBrowser::onRemoveButtonClicked()
+{
 }

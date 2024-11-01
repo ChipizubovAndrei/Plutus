@@ -13,9 +13,6 @@ Plutus::Plutus(QWidget *parent)
     setMinimumHeight(500);
     setMinimumWidth(700);
 
-
-    //QVBoxLayout* l = new QVBoxLayout();
-    //l->addWidget(new AccountMoneyOperationBrowser(l));
     AccountMoneyOperationBrowser* browser = new AccountMoneyOperationBrowser(this);
     setCentralWidget(browser);
 }

@@ -13,6 +13,10 @@ class AccountMoneyOperationBrowser : public QWidget
 public:
 	AccountMoneyOperationBrowser(QWidget *parent);
 
+private slots:
+	void onAddedButtonClicked();
+	void onRemoveButtonClicked();
+
 private:
 	MoneyOperationTableView* mViewAccountOperationTable;
 	MoneyOperationTableModel* mModelAccountOperationTable;
