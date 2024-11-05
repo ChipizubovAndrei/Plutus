@@ -3,11 +3,6 @@
 #include <QObject>
 #include <QString>
 
-/*
-Класс предоставляющий интерфейс для классов
-реализующих разные виды счетов пользователя
-Например: дебетовый, ИИС и д.р.
-*/
 class IAccount : public QObject
 {
 	Q_OBJECT

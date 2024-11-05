@@ -14,6 +14,7 @@ public:
 	AccountManager(QObject *parent);
 	void addAccount(QSharedPointer<IAccount> account);
 	void removeAccount(QSharedPointer<IAccount> account);
+	QList<QSharedPointer<IAccount>> getAccounts() const;
 	QSharedPointer<IAccount> getAccountById(int id) const;
 	QSharedPointer<IAccount> getAccountByName(const QString& name) const;
 

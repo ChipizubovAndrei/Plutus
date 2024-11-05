@@ -34,3 +34,7 @@ QSharedPointer<IAccount> AccountManager::getAccountByName(const QString& name) c
 	}
 	return QSharedPointer<IAccount>();
 }
+QList<QSharedPointer<IAccount>> AccountManager::getAccounts() const
+{
+	return mAccounts;
+}
