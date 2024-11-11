@@ -18,6 +18,9 @@ public:
 	int getMoneyAmount() const;
 	void setMoneyAmount(int moneyAmount);
 
+	//QSharedPointer<IMoneyOperationManager> getMoneyOperationManager() const;
+	//void setMoneyOperationManager(QSharedPointer<IMoneyOperationManager> operationManager);
+
 public slots:
 	void addMoney(int money);
 	void reduceMoney(int money);
@@ -26,4 +29,6 @@ private:
 	QString mName;
 	int mId;
 	int mMoneyAmount;
+	//QSharedPointer<IMoneyOperationManager> mOperationManager;
+
 };

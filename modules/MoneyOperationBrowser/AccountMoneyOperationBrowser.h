@@ -3,7 +3,6 @@
 #include <QWidget>
 #include <QPushButton>
 
-#include <MoneyOperationTableModel.h>
 #include <MoneyOperationTableView.h>
 
 class AccountMoneyOperationBrowser : public QWidget
@@ -19,7 +18,6 @@ private slots:
 
 private:
 	MoneyOperationTableView* mViewAccountOperationTable;
-	MoneyOperationTableModel* mModelAccountOperationTable;
 	QPushButton* mAddOperationButton;
 	QPushButton* mRemoveOperationButton;
 };

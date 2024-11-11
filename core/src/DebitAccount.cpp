@@ -43,3 +43,13 @@ void DebitAccount::reduceMoney(int money)
 {
 	mMoneyAmount = mMoneyAmount - money;
 }
+
+//QSharedPointer<IMoneyOperationManager> DebitAccount::getMoneyOperationManager() const
+//{
+//	return mOperationManager;
+//}
+
+//void DebitAccount::setMoneyOperationManager(QSharedPointer<IMoneyOperationManager> operationManager)
+//{
+//	mOperationManager = operationManager;
+//}
