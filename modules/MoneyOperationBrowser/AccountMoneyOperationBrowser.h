@@ -2,8 +2,13 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
-#include <MoneyOperationTableView.h>
+#include <QSqlDatabase>
+#include <QSqlTableModel>
+
+#include "MoneyOperationTableView.h"
 
 class AccountMoneyOperationBrowser : public QWidget
 {
@@ -20,4 +25,10 @@ private:
 	MoneyOperationTableView* mViewAccountOperationTable;
 	QPushButton* mAddOperationButton;
 	QPushButton* mRemoveOperationButton;
+	QHBoxLayout* mHLayout;
+	QVBoxLayout* mVLayout;
+
+	QSqlDatabase mDatabase;
+	QSharedPointer<QSqlTableModel> mTableModel;
+
 };

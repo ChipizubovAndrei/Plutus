@@ -8,7 +8,7 @@ set(CMAKE_AUTOMOC ON)
 
 include(CTest)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widget Test)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widget Sql)
 
 add_subdirectory(external)
 add_subdirectory(kernel)
