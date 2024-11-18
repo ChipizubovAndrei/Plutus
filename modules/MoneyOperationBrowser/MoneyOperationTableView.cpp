@@ -1,8 +1,11 @@
 #include "MoneyOperationTableView.h"
 
+#include <QHeaderView>
+
 MoneyOperationTableView::MoneyOperationTableView(QWidget *parent)
 	: QTableView(parent)
 {
 	setEditTriggers(QAbstractItemView::NoEditTriggers);
-	hideColumn(4);
+	verticalHeader()->hide();
+	horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
