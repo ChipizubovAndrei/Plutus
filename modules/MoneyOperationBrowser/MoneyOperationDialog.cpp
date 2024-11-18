@@ -2,6 +2,7 @@
 
 #include <QLineEdit>
 #include <QDoubleValidator>
+#include <QCalendarWidget>
 
 MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
 	: QDialog(parent)
@@ -10,28 +11,45 @@ MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
 
 	mDate = new QDateEdit();
 	mDate->setDate(QDate::currentDate());
+	mDate->setCalendarPopup(true);
+	mDate->setCalendarWidget(new QCalendarWidget());
+
 	mCategory = new QComboBox();
-	mCategory->setCurrentText("NULL");
+	mCategory->addItem("No category");
+	mCategory->setCurrentIndex(0);
+
 	mAmount = new QLineEdit();
 	QDoubleValidator* validator = new QDoubleValidator();
 	validator->setNotation(QDoubleValidator::StandardNotation);
 	mAmount->setValidator(validator);
+
 	mNote = new QLineEdit();
 
-	mLayout = new QFormLayout(this);
-	mLayout->addRow(tr("&Data:"), mDate);
-	mLayout->addRow(tr("&Category:"), mCategory);
-	mLayout->addRow(tr("&Amount:"), mAmount);
-	mLayout->addRow(tr("&Note:"), mNote);
+	mLayout = new QGridLayout(this);
+	mLayout->addWidget(new QLabel("Date:"), 0, 0);
+	mLayout->addWidget(mDate, 0, 1);
+
+	mLayout->addWidget(new QLabel("Category:"), 1, 0);
+	mLayout->addWidget(mCategory, 1, 1);
+
+	mLayout->addWidget(new QLabel("Amount:"), 2, 0);
+	mLayout->addWidget(mAmount, 2, 1);
+
+	mLayout->addWidget(new QLabel("Note:"), 3, 0);
+	mLayout->addWidget(mNote, 3, 1);
+
 
 	mApplyButton = new QPushButton("Ok");
 	mCancelButton = new QPushButton("Cancel");
 	mApplyButton->setEnabled(false);
-	mLayout->addWidget(mApplyButton);
-	mLayout->addWidget(mCancelButton);
+
+	QHBoxLayout* btnLayout = new QHBoxLayout();
+	btnLayout->addWidget(mApplyButton);
+	btnLayout->addWidget(mCancelButton);
+	mLayout->addLayout(btnLayout, 4, 0, -1, -1);
 
 	connect(mAmount, &QLineEdit::textEdited, this, &MoneyOperationDialog::onAmountEditingFinished);
-	connect(mApplyButton, &QPushButton::clicked, this, &QDialog::accept);
+	connect(mApplyButton, &QPushButton::clicked, this, &MoneyOperationDialog::onAccept);
 	connect(mCancelButton, &QPushButton::clicked, this, &QDialog::reject);
 }
 
@@ -45,4 +63,28 @@ void MoneyOperationDialog::onAmountEditingFinished()
 	{
 		mApplyButton->setEnabled(false);
 	}
+}
+
+/*
+	QDate date;
+	MoneyOperationType type;
+	QString category;
+	int moneyAmount;
+	QString note;
+*/
+
+void MoneyOperationDialog::onAccept()
+{
+	mResultMoneyOperation = MoneyOperation{
+		mDate->date(),
+		mCategory->currentText(),
+		mAmount->text().toDouble(),
+		mNote->text()
+	};
+	accept();
+}
+
+MoneyOperation MoneyOperationDialog::getMoneyOperation() const
+{
+	return mResultMoneyOperation;
 }

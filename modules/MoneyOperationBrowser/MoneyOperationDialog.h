@@ -4,8 +4,10 @@
 #include <QLabel>
 #include <QDateEdit>
 #include <QComboBox>
-#include <QFormLayout>
+#include <QGridLayout>
 #include <QPushButton>
+
+#include <MoneyOperation.h>
 
 class MoneyOperationDialog : public QDialog
 {
@@ -14,16 +16,21 @@ class MoneyOperationDialog : public QDialog
 public:
 	MoneyOperationDialog(QWidget *parent);
 
+	MoneyOperation getMoneyOperation() const;
+
 private slots:
 	void onAmountEditingFinished();
+	void onAccept();
 
 private:
+	MoneyOperation mResultMoneyOperation;
+
 	QDateEdit* mDate;
 	QComboBox* mCategory;
 	QLineEdit* mAmount;
 	QLineEdit* mNote;
 
-	QFormLayout* mLayout;
+	QGridLayout* mLayout;
 	QPushButton* mApplyButton;
 	QPushButton* mCancelButton;
 };
