@@ -1,6 +1,9 @@
 #include "AccountMoneyOperationBrowser.h"
 
 #include <QTableView>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QMessageBox>
 
 #include "MoneyOperationDialog.h"
 
@@ -43,7 +46,30 @@ void AccountMoneyOperationBrowser::onAddedButtonClicked()
 {
 	MoneyOperationDialog* dialog = new MoneyOperationDialog(this);
 	if(dialog->exec() == QDialog::Accepted)
-	{ 
+	{
+		MoneyOperation result = dialog->getMoneyOperation();
+		QSqlQuery sql = QSqlQuery();
+		sql.prepare("INSERT INTO MoneyOperations VALUES (?, ?, ?)");
+		sql.bindValue(0, mTableModel->rowCount()+1);
+		sql.bindValue(1, result.moneyAmount);
+		sql.bindValue(2, result.category);
+		sql.exec();
+		if (sql.lastError().type() == QSqlError::NoError)
+		{
+			mTableModel->select();
+		}
+		//MoneyOperation result = dialog->getMoneyOperation();
+		//mTableModel->setData(mTableModel->index(mTableModel->rowCount(), 0), mTableModel->rowCount());
+		//mTableModel->setData(mTableModel->index(mTableModel->rowCount(), 1), result.moneyAmount);
+		//mTableModel->setData(mTableModel->index(mTableModel->rowCount(), 2), result.category);
+		//if (mTableModel->submitAll())
+		//{
+		//	emit postMessage("Success commit to DB");
+		//}
+		//else
+		//{
+		//	emit postMessage("Failed commit to DB");
+		//}
 	}
 }
 

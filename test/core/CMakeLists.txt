@@ -13,7 +13,7 @@ if(BUILD_TESTING)
 
 	target_link_libraries(${PROJECT_NAME} PRIVATE
 		GTest::gtest_main
-		Qt6::Core
+		Qt::Core
 		plutus-core
 	)
 

@@ -5,14 +5,8 @@
 
 struct MoneyOperation
 {
-	enum class MoneyOperationType{
-		Earnings,
-		Expenditure
-	};
-
 	QDate date;
-	MoneyOperationType type;
 	QString category;
-	int moneyAmount;
+	double moneyAmount;
 	QString note;
 };
