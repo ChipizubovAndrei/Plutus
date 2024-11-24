@@ -6,7 +6,10 @@
 struct MoneyOperation
 {
 	QDate date;
-	QString category;
+	int srcAccountId;
+	int dstAccountId;
+	int memberId;
+	int categoryId;
 	double moneyAmount;
 	QString note;
 };

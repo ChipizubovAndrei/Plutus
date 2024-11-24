@@ -9,17 +9,14 @@ class DebitAccount : public IAccount
 public:
 	DebitAccount(QString name, int Id, int moneyAmount, QObject* parent = nullptr);
 
-	QString getName() const;
-	void setName(const QString& name);
+	QString getName() const override;
+	void setName(const QString& name) override;
 
-	int getId() const;
-	void setId(int id);
+	int getId() const override;
+	void setId(int id) override;
 
-	int getMoneyAmount() const;
-	void setMoneyAmount(int moneyAmount);
-
-	//QSharedPointer<IMoneyOperationManager> getMoneyOperationManager() const;
-	//void setMoneyOperationManager(QSharedPointer<IMoneyOperationManager> operationManager);
+	int getMoneyAmount() const override;
+	void setMoneyAmount(int moneyAmount) override;
 
 public slots:
 	void addMoney(int money);
@@ -29,6 +26,4 @@ private:
 	QString mName;
 	int mId;
 	int mMoneyAmount;
-	//QSharedPointer<IMoneyOperationManager> mOperationManager;
-
 };

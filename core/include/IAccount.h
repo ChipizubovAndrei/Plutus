@@ -19,9 +19,6 @@ public:
 	virtual int getMoneyAmount() const = 0;
 	virtual void setMoneyAmount(int moneyAmount) = 0;
 
-	//virtual QSharedPointer<IMoneyOperationManager> getMoneyOperationManager() const = 0;
-	//virtual void setMoneyOperationManager(QSharedPointer<IMoneyOperationManager> moneyOperationManager) = 0;
-
 signals:
 	void moneyAdded(int money);
 	void moneyReduced(int money);
