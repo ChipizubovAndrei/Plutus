@@ -9,7 +9,7 @@ class MemberManager : public QObject
 	Q_OBJECT
 
 public:
-	static QSharedPointer<MemberManager> instance(QSharedPointer<QSqlDatabase> database, QObject* parent);
+	static QSharedPointer<MemberManager> instance();
 	QList<QString> getMembers() const;
 	void addMember(const QString& member);
 	void removeMember(const QString& member);
@@ -21,13 +21,12 @@ signals:
 	void memberUpdated(QString oldMember, QString newMember);
 
 private:
-	MemberManager(QSharedPointer<QSqlDatabase> database, QObject *parent);
+	MemberManager(QObject *parent=nullptr);
 	MemberManager(const MemberManager& manager);
 	MemberManager& operator=(const MemberManager & manager);
 
 
 private:
 	QList<QString> mMembers;
-	QSharedPointer<QSqlDatabase> mDatabasePtr;
 	QString mMemberTableName;
 };

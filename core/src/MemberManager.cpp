@@ -7,22 +7,27 @@
 
 #include "DatabaseManager.h"
 
-static QSharedPointer<MemberManager> mMemberManger;
+static QSharedPointer<MemberManager> memberManger;
 
-QSharedPointer<MemberManager> MemberManager::instance(QSharedPointer<QSqlDatabase> database, QObject* parent)
+QSharedPointer<MemberManager> MemberManager::instance()
 {
-	if (mMemberManger) return mMemberManger;
-	mMemberManger = QSharedPointer<MemberManager>(new MemberManager(database, parent));
-	return mMemberManger;
+	if (!memberManger)
+	{
+		memberManger = QSharedPointer<MemberManager>(
+			new MemberManager()
+		);
+
+	}
+	return memberManger;
 
 }
 
-MemberManager::MemberManager(QSharedPointer<QSqlDatabase> database, QObject *parent)
+MemberManager::MemberManager(QObject *parent)
 	: QObject(parent),
 	mMemberTableName(DatabaseManager::getMemberTableName())
 {
-//get data from database
-	QSqlQuery query(QString("SELECT name FROM %1 ORDER BY ASC")
+	//get data from database
+	QSqlQuery query(QString("SELECT name FROM %1 ORDER BY name ASC")
 		.arg(mMemberTableName)
 	);
 	if (query.lastError().type() == QSqlError::NoError)
