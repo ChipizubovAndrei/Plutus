@@ -8,8 +8,8 @@ struct MoneyOperation
 	QDate date;
 	int srcAccountId;
 	int dstAccountId;
-	int memberId;
-	int categoryId;
+	QString member;
+	QString category;
 	double moneyAmount;
 	QString note;
 };
