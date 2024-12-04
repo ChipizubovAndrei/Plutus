@@ -1,9 +1,5 @@
 #include "Plutus.h"
 
-#include <QLayout>
-#include <QLabel>
-
-#include <MoneyOperation.h>
 #include <AccountMoneyOperationBrowser.h>
 
 Plutus::Plutus(QWidget *parent)
