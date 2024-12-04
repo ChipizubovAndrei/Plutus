@@ -14,7 +14,13 @@ class MoneyOperationDialog : public QDialog
 	Q_OBJECT
 
 public:
-	MoneyOperationDialog(QWidget *parent);
+	enum class Type
+	{
+		Outer = 0,
+		Inner
+	};
+
+	MoneyOperationDialog(QWidget *parent, Type type = Type::Outer);
 
 	MoneyOperation getMoneyOperation() const;
 
@@ -24,9 +30,13 @@ private slots:
 
 private:
 	MoneyOperation mResultMoneyOperation;
+	Type mType;
 
 	QDateEdit* mDate;
 	QComboBox* mCategory;
+	QComboBox* mMember;
+	QComboBox* mSrcAccount;
+	QComboBox* mDstAccount;
 	QLineEdit* mAmount;
 	QLineEdit* mNote;
 

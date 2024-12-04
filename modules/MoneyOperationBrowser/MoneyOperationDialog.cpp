@@ -1,21 +1,34 @@
-#include "MoneyOperationDialog.h"
+﻿#include "MoneyOperationDialog.h"
 
 #include <QLineEdit>
 #include <QDoubleValidator>
 #include <QCalendarWidget>
 
-MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
-	: QDialog(parent)
+#include <AccountManager.h>
+
+MoneyOperationDialog::MoneyOperationDialog(QWidget *parent, Type type)
+	: QDialog(parent), mType(type)
 {
-	setWindowTitle("Add money operation");
+	setWindowTitle("Добавить операцию по счету");
 
 	mDate = new QDateEdit();
 	mDate->setDate(QDate::currentDate());
 	mDate->setCalendarPopup(true);
 	mDate->setCalendarWidget(new QCalendarWidget());
 
+	mDstAccount = new QComboBox();
+	mDstAccount->addItem("Счет не указан");
+	mDstAccount->setCurrentIndex(0);
+
+	if (mType == Type::Inner)
+	{
+		mSrcAccount = new QComboBox();
+		mSrcAccount->addItem("Счет не указан");
+		mSrcAccount->setCurrentIndex(0);
+	}
+
 	mCategory = new QComboBox();
-	mCategory->addItem("No category");
+	mCategory->addItem("Нет категории");
 	mCategory->setCurrentIndex(0);
 
 	mAmount = new QLineEdit();
@@ -25,28 +38,38 @@ MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
 
 	mNote = new QLineEdit();
 
+	int widgetIndex = 0;
 	mLayout = new QGridLayout(this);
-	mLayout->addWidget(new QLabel("Date:"), 0, 0);
-	mLayout->addWidget(mDate, 0, 1);
+	mLayout->addWidget(new QLabel("Дата:"), widgetIndex, 0);
+	mLayout->addWidget(mDate, widgetIndex++, 1);
 
-	mLayout->addWidget(new QLabel("Category:"), 1, 0);
-	mLayout->addWidget(mCategory, 1, 1);
+	mLayout->addWidget(new QLabel("Целевой счет:"), widgetIndex, 0);
+	mLayout->addWidget(mDstAccount, widgetIndex++, 1);
 
-	mLayout->addWidget(new QLabel("Amount:"), 2, 0);
-	mLayout->addWidget(mAmount, 2, 1);
+	if (mType == Type::Inner)
+	{
+		mLayout->addWidget(new QLabel("Счет источник:"), widgetIndex, 0);
+		mLayout->addWidget(mSrcAccount, widgetIndex++, 1);
+	}
 
-	mLayout->addWidget(new QLabel("Note:"), 3, 0);
-	mLayout->addWidget(mNote, 3, 1);
+	mLayout->addWidget(new QLabel("Категория:"), widgetIndex, 0);
+	mLayout->addWidget(mCategory, widgetIndex++, 1);
+
+	mLayout->addWidget(new QLabel("Сумма:"), widgetIndex, 0);
+	mLayout->addWidget(mAmount, widgetIndex++, 1);
+
+	mLayout->addWidget(new QLabel("Заметка:"), widgetIndex, 0);
+	mLayout->addWidget(mNote, widgetIndex++, 1);
 
 
-	mApplyButton = new QPushButton("Ok");
-	mCancelButton = new QPushButton("Cancel");
+	mApplyButton = new QPushButton("Ок");
+	mCancelButton = new QPushButton("Отмена");
 	mApplyButton->setEnabled(false);
 
 	QHBoxLayout* btnLayout = new QHBoxLayout();
 	btnLayout->addWidget(mApplyButton);
 	btnLayout->addWidget(mCancelButton);
-	mLayout->addLayout(btnLayout, 4, 0, -1, -1);
+	mLayout->addLayout(btnLayout, widgetIndex++, 0, -1, -1);
 
 	connect(mAmount, &QLineEdit::textEdited, this, &MoneyOperationDialog::onAmountEditingFinished);
 	connect(mApplyButton, &QPushButton::clicked, this, &MoneyOperationDialog::onAccept);
@@ -65,22 +88,34 @@ void MoneyOperationDialog::onAmountEditingFinished()
 	}
 }
 
-/*
-	QDate date;
-	MoneyOperationType type;
-	QString category;
-	int moneyAmount;
-	QString note;
-*/
-
 void MoneyOperationDialog::onAccept()
 {
-	mResultMoneyOperation = MoneyOperation{
-		mDate->date(),
-		mCategory->currentText(),
-		mAmount->text().toDouble(),
-		mNote->text()
-	};
+	QSharedPointer<AccountManager> accountManager = AccountManager::instance();
+	if (mType == Type::Outer)
+	{
+		mResultMoneyOperation = MoneyOperation{
+			mDate->date(),
+			accountManager->getAccountByName(mDstAccount->currentText())->getId(),
+			NULL,
+			mMember->currentText(),
+			mCategory->currentText(),
+			mAmount->text().toDouble(),
+			mNote->text()
+		};
+	}
+	else 
+	{
+		mResultMoneyOperation = MoneyOperation{
+			mDate->date(),
+			accountManager->getAccountByName(mDstAccount->currentText())->getId(),
+			accountManager->getAccountByName(mSrcAccount->currentText())->getId(),
+			mMember->currentText(),
+			mCategory->currentText(),
+			mAmount->text().toDouble(),
+			mNote->text()
+		};
+	}
+
 	accept();
 }
 
