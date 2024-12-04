@@ -11,7 +11,8 @@ class AccountManager : public QObject
 	Q_OBJECT
 
 public:
-	AccountManager(QObject *parent);
+	static QSharedPointer<AccountManager> instance();
+
 	void addAccount(QSharedPointer<IAccount> account);
 	void removeAccount(QSharedPointer<IAccount> account);
 	QList<QSharedPointer<IAccount>> getAccounts() const;
@@ -23,5 +24,11 @@ signals:
 	void accountRemoved(QSharedPointer<IAccount> account);
 
 private:
+	AccountManager(QObject* parent=nullptr);
+	AccountManager(const AccountManager& manager);
+	AccountManager& operator=(const AccountManager& manager);
+
+private:
 	QList<QSharedPointer<IAccount>> mAccounts;
+	QString mAccountTableName;
 };
