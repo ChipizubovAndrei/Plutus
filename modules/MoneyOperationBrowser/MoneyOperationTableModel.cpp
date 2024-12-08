@@ -16,26 +16,33 @@ QVariant MoneyOperationTableModel::data(const QModelIndex& index, int role) cons
 {
     QVariant value = QSqlQueryModel::data(index);
 
-    // Какие либо преобразования с данными
-    // Например преобразование значений к определенному виду
-    if (index.column() == 0) return value.toInt(); // ID операции
-    if (index.column() == 1) return value.toInt(); // source account id
-    if (index.column() == 2) return value.toInt(); // destination account id
-    if (index.column() == 3) return value.toInt(); // memder id
-    if (index.column() == 4) return value.toInt(); // category id
-    if (index.column() == 5)
+    switch(role)
     {
-        // Дата совершения операции, храниться как юлианская дата
-        return QDate::fromJulianDay(value.toInt()).toString("YYYY.MM.DD");
+    case Qt::DisplayRole:
+    case Qt::EditRole:
+        // Какие либо преобразования с данными
+        // Например преобразование значений к определенному виду
+        if (index.column() == 0) return value.toString(); // ID операции
+        if (index.column() == 1) return value.toString(); // source account id
+        if (index.column() == 2) return value.toString(); // destination account id
+        if (index.column() == 3) return value.toString(); // memder id
+        if (index.column() == 4) return value.toString(); // category id
+        if (index.column() == 5)
+        {
+            // Дата совершения операции, храниться как юлианская дата
+            return QDate::fromJulianDay(value.toInt()).toString("dd.mm.yyyy");
+        }
+        if (index.column() == 6)
+        {
+            // Сумма денег в операции
+            return QString("%1").arg(value.toDouble(), 0, 'f', 2);
+        }
+        if (index.column() == 7) return value.toString(); // note
+    default:
+        return QVariant();
     }
-    if (index.column() == 6)
-    {
-        // Сумма денег в операции
-        return QString("%1").arg(value.toDouble(), 0, 'f', 2);
-    }
-    if (index.column() == 7) value.toString(); // note
-
-    return value;
+ 
+    return QVariant();
 }
 
 bool MoneyOperationTableModel::setData(const QModelIndex& index, const QVariant& value, int role)
