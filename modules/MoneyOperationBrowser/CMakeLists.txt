@@ -1,4 +1,4 @@
-project(MoneyOperationBrowser)
+﻿project(MoneyOperationBrowser)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Sql Core Widgets)
 find_package(Qt${QT_VERSION_MAJOR} 
@@ -18,5 +18,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt::Core
 	Qt::Widgets
 	plutus-core
+    plutus-database
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC Qt::Sql)
