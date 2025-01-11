@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QWidget>
 #include <QPushButton>
@@ -9,6 +9,7 @@
 #include <QSqlTableModel>
 
 #include "MoneyOperationTableView.h"
+#include "MoneyOperationTableModel.h"
 
 class AccountMoneyOperationBrowser : public QWidget
 {
@@ -23,12 +24,13 @@ private slots:
 
 private:
 	MoneyOperationTableView* mViewAccountOperationTable;
+    QSharedPointer<MoneyOperationTableModel> mModelAccountOperationTable;
+    //QSharedPointer<QSqlTableModel> mModelAccountOperationTable;
+
 	QPushButton* mAddOperationButton;
 	QPushButton* mRemoveOperationButton;
 	QHBoxLayout* mHLayout;
 	QVBoxLayout* mVLayout;
 
 	QSqlDatabase mDatabase;
-	QSharedPointer<QSqlTableModel> mTableModel;
-
 };

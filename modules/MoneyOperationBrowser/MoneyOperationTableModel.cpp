@@ -113,15 +113,15 @@ bool MoneyOperationTableModel::setData(const QModelIndex& index, const QVariant&
 
 void MoneyOperationTableModel::refresh()
 {
-    setQuery(QString("SELECT * FROM %1 ORDER BY id DESC").arg(mTableName));
+    setQuery(QString(
+        "SELECT member_id, category_id, date, moneyAmount, note FROM %1 ORDER BY id DESC"
+    ).arg(mTableName));
 
-    setHeaderData(0, Qt::Horizontal, "id");
-    setHeaderData(1, Qt::Horizontal, "srcAccount_id");
-    setHeaderData(2, Qt::Horizontal, "dstAccount_id");
-    setHeaderData(3, Qt::Horizontal, "member_id");
-    setHeaderData(4, Qt::Horizontal, "category_id");
-    setHeaderData(5, Qt::Horizontal, "date");
-    setHeaderData(6, Qt::Horizontal, "moneyAmount");
-    setHeaderData(7, Qt::Horizontal, "note");
+    int headerIndex = 0;
+    setHeaderData(headerIndex++, Qt::Horizontal, "member_id");
+    setHeaderData(headerIndex++, Qt::Horizontal, "category_id");
+    setHeaderData(headerIndex++, Qt::Horizontal, "date");
+    setHeaderData(headerIndex++, Qt::Horizontal, "moneyAmount");
+    setHeaderData(headerIndex++, Qt::Horizontal, "note");
 
 }

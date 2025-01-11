@@ -1,4 +1,4 @@
-#include "MoneyOperationTableView.h"
+﻿#include "MoneyOperationTableView.h"
 
 #include <QHeaderView>
 
