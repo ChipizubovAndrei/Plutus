@@ -6,6 +6,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_AUTOMOC ON)
 
+if(MSVC)
+    add_compile_options(/WX)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic) 
+endif()
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widget Sql)
 
 add_subdirectory(external)
