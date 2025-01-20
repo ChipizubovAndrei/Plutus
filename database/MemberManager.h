@@ -1,32 +1,28 @@
-#pragma once
+﻿#pragma once
 
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
+
+#include <Member.h>
 
 class MemberManager : public QObject
 {
 	Q_OBJECT
 
 public:
-	static QSharedPointer<MemberManager> instance();
-	QList<QString> getMembers() const;
-	void addMember(const QString& member);
-	void removeMember(const QString& member);
-	void updateMember(const QString& oldMember, const QString& newMember);
+    MemberManager(QObject* parent = nullptr);
+	QList<Member> getMembers() const;
+	void addMember(Member member);
+	void removeMember(Member member);
+	void updateMember(Member member);
 
 signals:
-	void memberAdded(QString member);
-	void memberRemoved(QString member);
-	void memberUpdated(QString oldMember, QString newMember);
+	void memberAdded(Member member);
+	void memberRemoved(Member member);
+	void memberUpdated(Member member);
 
 private:
-	MemberManager(QObject *parent=nullptr);
-	MemberManager(const MemberManager& manager);
-	MemberManager& operator=(const MemberManager & manager);
-
-
-private:
-	QList<QString> mMembers;
+	QList<Member> mMembers;
 	QString mMemberTableName;
 };

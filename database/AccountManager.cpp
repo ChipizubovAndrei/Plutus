@@ -4,23 +4,6 @@
 #include <QSqlError>
 
 #include "DatabaseManager.h"
-#include <DebitAccount.h>
-
-static QSharedPointer<AccountManager> accountManager;
-
-QSharedPointer<AccountManager> AccountManager::instance()
-{
-    qDebug() << "Начато получение менеджера аккаунтов";
-	if (!accountManager)
-	{
-        qDebug() << "Менеджера аккаунтов не существует, создаем";
-		accountManager = QSharedPointer<AccountManager>(
-			new AccountManager()
-		);
-	}
-    qDebug() << "Окончено получение менеджера аккаунтов";
-	return accountManager;
-}
 
 AccountManager::AccountManager(QObject *parent)
 	: QObject(parent),
@@ -36,18 +19,11 @@ AccountManager::AccountManager(QObject *parent)
 		query.setForwardOnly(true);
 		while (query.next())
 		{
-            // TODO. Переписать под нормальные строковые названия типов
-			if (query.value(3).toInt() == 0)
-			{
-				QSharedPointer<IAccount> account = QSharedPointer<IAccount>(
-					new DebitAccount(
-						query.value(1).toString(),
-						query.value(0).toInt(),
-						query.value(2).toDouble()
-					)
-				);
-				mAccounts.append(account);
-			}
+            Account account;
+            account.id = query.value("id").toInt();
+            account.name = query.value("name").toString();
+            account.moneyAmount = query.value("moneyAmount").toDouble();
+            mAccounts.append(account);
 		}
 	}
 	else
@@ -59,42 +35,43 @@ AccountManager::AccountManager(QObject *parent)
     qDebug() << "Окончено создание менеджера аккаунтов";
 }
 
-void AccountManager::addAccount(QSharedPointer<IAccount> account)
+void AccountManager::addAccount(Account account)
 {
-    qDebug() << "Начато добавление аккаунта " << account->getName();
+    qDebug() << "Начато добавление аккаунта " << account.id;
 	mAccounts.append(account);
 	emit accountAdded(account);
     qDebug() << "Окончено добавление аккаунта";
 }
 
-void AccountManager::removeAccount(QSharedPointer<IAccount> account)
+void AccountManager::removeAccount(Account account)
 {
-    qDebug() << "Начато удаление аккаунта " << account->getName();
+    qDebug() << "Начато удаление аккаунта " << account.name;
 	mAccounts.removeAll(account);
     emit accountRemoved(account);
     qDebug() << "Окончено удаление аккаунта";
 }
 
-QSharedPointer<IAccount> AccountManager::getAccountById(int id) const
+Account AccountManager::getAccountById(int id) const
 {
-	for (auto account : mAccounts)
+	for (const auto& account : mAccounts)
 	{
-		if (account->getId() == id) return account;
+		if (account.id == id) return account;
 	}
-	return QSharedPointer<IAccount>();
+    qDebug() << "Аккаунт с id = " << id << " не существует";
+	return Account();
 }
 
-QSharedPointer<IAccount> AccountManager::getAccountByName(const QString& name) const
+Account AccountManager::getAccountByName(const QString& name) const
 {
     qDebug() << "Получение аккаунта " << name << " по имени";
-	for (auto account : mAccounts)
+	for (const auto& account : mAccounts)
 	{
-		if (account->getName() == name) return account;
+		if (account.name == name) return account;
 	}
-	return QSharedPointer<IAccount>();
+	return Account();
 }
 
-QList<QSharedPointer<IAccount>> AccountManager::getAccounts() const
+QList<Account> AccountManager::getAccounts() const
 {
     return mAccounts;
 }

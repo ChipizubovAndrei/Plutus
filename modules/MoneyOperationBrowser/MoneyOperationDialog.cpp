@@ -90,12 +90,12 @@ void MoneyOperationDialog::onAmountEditingFinished()
 
 void MoneyOperationDialog::onAccept()
 {
-	QSharedPointer<AccountManager> accountManager = AccountManager::instance();
+	QSharedPointer<AccountManager> accountManager = QSharedPointer<AccountManager>(new AccountManager());
 	if (mType == Type::Outer)
 	{
 		mResultMoneyOperation = MoneyOperation{
 			mDate->date(),
-			accountManager->getAccountByName(mDstAccount->currentText())->getId(),
+			accountManager->getAccountByName(mDstAccount->currentText()).id,
 			NULL,
 			mMember->currentText(),
 			mCategory->currentText(),
@@ -107,8 +107,8 @@ void MoneyOperationDialog::onAccept()
 	{
 		mResultMoneyOperation = MoneyOperation{
 			mDate->date(),
-			accountManager->getAccountByName(mDstAccount->currentText())->getId(),
-			accountManager->getAccountByName(mSrcAccount->currentText())->getId(),
+			accountManager->getAccountByName(mDstAccount->currentText()).id,
+			accountManager->getAccountByName(mSrcAccount->currentText()).id,
 			mMember->currentText(),
 			mCategory->currentText(),
 			mAmount->text().toDouble(),

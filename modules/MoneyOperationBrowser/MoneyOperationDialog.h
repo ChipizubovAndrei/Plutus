@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QDialog>
 #include <QLabel>
@@ -7,7 +7,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 
-#include <MoneyOperation.h>
+#include <Operation.h>
 
 class MoneyOperationDialog : public QDialog
 {

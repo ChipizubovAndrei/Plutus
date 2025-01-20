@@ -21,3 +21,5 @@ target_link_libraries(${PROJECT_NAME}
         plutus-core
         MoneyOperationBrowser
 )
+
+install(DIRECTORY ../storage DESTINATION CMAKE_BINARY_DIR)

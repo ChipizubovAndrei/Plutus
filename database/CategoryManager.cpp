@@ -5,17 +5,6 @@
 
 #include "DatabaseManager.h"
 
-static QSharedPointer<CategoryManager> categoryManager;
-
-QSharedPointer<CategoryManager> CategoryManager::instance()
-{
-    if (!categoryManager)
-    {
-        categoryManager = QSharedPointer<CategoryManager>(new CategoryManager());
-    }
-    return categoryManager;
-}
-
 CategoryManager::CategoryManager()
     : mTableName(DatabaseManager::getCategoryTableName())
 {

@@ -1,4 +1,4 @@
-#include "MemberManager.h"
+﻿#include "MemberManager.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -6,21 +6,6 @@
 #include <exception>
 
 #include "DatabaseManager.h"
-
-static QSharedPointer<MemberManager> memberManger;
-
-QSharedPointer<MemberManager> MemberManager::instance()
-{
-	if (!memberManger)
-	{
-		memberManger = QSharedPointer<MemberManager>(
-			new MemberManager()
-		);
-
-	}
-	return memberManger;
-
-}
 
 MemberManager::MemberManager(QObject *parent)
 	: QObject(parent),
@@ -35,7 +20,11 @@ MemberManager::MemberManager(QObject *parent)
 		query.setForwardOnly(true);
 		while (query.next())
 		{
-			mMembers.append(query.value(0).toString());
+            Member member;
+            member.id = query.value("id").toInt();
+            member.firstName = query.value("firstName").toString();
+            member.secondName = query.value("secondName").toString();
+			mMembers.append(member);
 		}
 	}
 	else
@@ -44,16 +33,21 @@ MemberManager::MemberManager(QObject *parent)
 	}
 }
 
-QList<QString> MemberManager::getMembers() const
+QList<Member> MemberManager::getMembers() const
 {
 	return mMembers;
 }
 
-void MemberManager::addMember(const QString& member)
+void MemberManager::addMember(Member member)
 {
 	mMembers.append(member);
-	QSqlQuery query(QString("INSERT INTO %1 name VALUES %2").arg(mMemberTableName).arg(member));
-	if (query.lastError().type() == QSqlError::NoError)
+    QSqlQuery query;
+    query.prepare(QString("INSERT INTO :tableName (id, firstName, secondName) VALUES (:id, :firstName, :secondName)"));
+    query.bindValue(":id", member.id);
+    query.bindValue(":firstName", member.firstName);
+    query.bindValue(":secondName", member.secondName);
+    query.exec();
+    if (query.lastError().type() == QSqlError::NoError)
 	{
 		emit memberAdded(member);
 	}
@@ -63,10 +57,15 @@ void MemberManager::addMember(const QString& member)
 	}
 }
 
-void MemberManager::removeMember(const QString& member)
+void MemberManager::removeMember(Member member)
 {
-	mMembers.removeAll(member);
-	QSqlQuery query(QString("DELETE FROM %1 WHERE name = %2").arg(mMemberTableName).arg(member));
+    throw std::exception(); // не реализовано до конца
+    // проблема с оператором сравнения
+	//mMembers.removeAll(member);
+    QSqlQuery query;
+    query.prepare(QString("DELETE FROM ? WHERE id = :id"));
+    query.bindValue(":id", member.id);
+    query.exec();
 	if (query.lastError().type() == QSqlError::NoError)
 	{
 		emit memberRemoved(member);
@@ -77,16 +76,27 @@ void MemberManager::removeMember(const QString& member)
 	}
 }
 
-void MemberManager::updateMember(const QString& oldMember, const QString& newMember)
+void MemberManager::updateMember(Member member)
 {
-	mMembers[mMembers.indexOf(oldMember)] = newMember;
-	QSqlQuery query(QString("UPDATE %1 SET name = %2 WHERE name = %3")
-		.arg(mMemberTableName)
-		.arg(oldMember)
-		.arg(newMember));
+    for (int i = 0; i < mMembers.size(); ++i)
+    {
+        if (mMembers[i].id == member.id)
+        {
+            mMembers[i] = member;
+            break;
+        }
+    }
+    QSqlQuery query;
+    query.prepare(QString(
+        "UPDATE :tableName SET firstName = :firstName, secondName = :firstName WHERE id = :id"));
+    query.bindValue(":tableName", mMemberTableName);
+    query.bindValue(":firstName", member.firstName);
+    query.bindValue(":secondName", member.secondName);
+    query.bindValue(":id", member.id);
+    query.exec();
 	if (query.lastError().type() == QSqlError::NoError)
 	{
-		emit memberUpdated(oldMember, newMember);
+		emit memberUpdated(member);
 	}
 	else
 	{

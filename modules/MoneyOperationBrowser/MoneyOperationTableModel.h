@@ -5,7 +5,7 @@
 #include <QModelIndex>
 #include <QVariant>
 
-#include <MoneyOperation.h>
+#include <Operation.h>
 
 class MoneyOperationTableModel : public QSqlQueryModel
 {

@@ -63,19 +63,8 @@ DatabaseManager::DatabaseManager(QObject *parent)
 			throw std::exception(); // database dir creation failed
 		}
 	}
+    connectToDatabase();
 
-	mDatabase = QSqlDatabase::addDatabase("QSQLITE");
-	mDatabase.setDatabaseName(QString("%1%2%3")
-		.arg(databaseDirName.absolutePath())
-		.arg(QDir::separator())
-		.arg(databaseName)
-	);
-	if (!mDatabase.open())
-	{
-        qCritical() << "Не удалось открыть файл с базой данных";
-		throw std::exception(); // database open failed
-	}
-	// TODO: create tables ONLY when create DB
 	//createTables();
 	qDebug() << "Окончено создание DatabaseManager";
 }
@@ -85,10 +74,34 @@ QSqlDatabase DatabaseManager::getDatabase() const
 	return mDatabase;
 }
 
+bool DatabaseManager::isConnectedToDatabase() const
+{
+    return mDatabase.isOpen();
+}
+
+bool DatabaseManager::connectToDatabase()
+{
+    if (mDatabase.isOpen()) return true;
+
+    mDatabase = QSqlDatabase::addDatabase("QSQLITE");
+    mDatabase.setDatabaseName(QString("%1%2%3")
+        .arg(databaseDirName.absolutePath())
+        .arg(QDir::separator())
+        .arg(databaseName)
+    );
+    if (!mDatabase.open())
+    {
+        qCritical() << "Не удалось открыть файл с базой данных";
+        throw std::exception(); // database open failed
+    }
+
+    return true;
+}
+
 void DatabaseManager::createTables()
 {
     // Таблица не актуальна, необходимо обновить запросы!!
-	if (mDatabase.isOpen())
+	if (isConnectedToDatabase())
 	{
 		QSqlQuery query;
 		query.exec(

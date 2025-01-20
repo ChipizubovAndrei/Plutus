@@ -1,8 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include <QObject>
 #include <QSharedPointer>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QDir>
 
 class DatabaseManager : public QObject
@@ -18,6 +19,8 @@ public:
 	static QString getOperationTableName();
 
 	QSqlDatabase getDatabase() const;
+    bool isConnectedToDatabase() const;
+    bool connectToDatabase();
 
 private:
 	DatabaseManager(QObject *parent=nullptr);

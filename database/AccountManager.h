@@ -1,34 +1,29 @@
-#pragma once
+﻿#pragma once
 
 #include <QObject>
 #include <QList>
 #include <QSharedPointer>
 
-#include <IAccount.h>
+#include <Account.h>
 
 class AccountManager : public QObject
 {
 	Q_OBJECT
 
 public:
-	static QSharedPointer<AccountManager> instance();
+    AccountManager(QObject* parent = nullptr);
 
-	void addAccount(QSharedPointer<IAccount> account);
-	void removeAccount(QSharedPointer<IAccount> account);
-	QList<QSharedPointer<IAccount>> getAccounts() const;
-	QSharedPointer<IAccount> getAccountById(int id) const;
-	QSharedPointer<IAccount> getAccountByName(const QString& name) const;
+	void addAccount(Account account);
+	void removeAccount(Account account);
+	QList<Account> getAccounts() const;
+	Account getAccountById(int id) const;
+	Account getAccountByName(const QString& name) const;
 
 signals:
-	void accountAdded(QSharedPointer<IAccount> account);
-	void accountRemoved(QSharedPointer<IAccount> account);
+	void accountAdded(Account account);
+	void accountRemoved(Account account);
 
 private:
-	AccountManager(QObject* parent=nullptr);
-	AccountManager(const AccountManager& manager);
-	AccountManager& operator=(const AccountManager& manager);
-
-private:
-	QList<QSharedPointer<IAccount>> mAccounts;
+	QList<Account> mAccounts;
 	QString mAccountTableName;
 };
