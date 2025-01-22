@@ -62,11 +62,15 @@ void MemberManager::removeMember(Member member)
     throw std::exception(); // не реализовано до конца
     // проблема с оператором сравнения
 	//mMembers.removeAll(member);
+    for (int i = 0; i < mMembers.size(); ++i)
+    {
+        if (mMembers[i].id = member.id) mMembers.removeAt(i);
+    }
     QSqlQuery query;
-    query.prepare(QString("DELETE FROM ? WHERE id = :id"));
+    query.prepare(QString("DELETE FROM :tableName WHERE id = :id"));
+    query.bindValue(":tableName", mMemberTableName);
     query.bindValue(":id", member.id);
-    query.exec();
-	if (query.lastError().type() == QSqlError::NoError)
+	if (query.exec())
 	{
 		emit memberRemoved(member);
 	}

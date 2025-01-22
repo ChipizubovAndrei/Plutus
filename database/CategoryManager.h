@@ -5,24 +5,26 @@
 #include <QString>
 #include <QMap>
 
+#include <Category.h>
+
 class CategoryManager : public QObject
 {
 	Q_OBJECT
 
 public:
     CategoryManager();
-    QMap<int, QString> getCategories() const;
+    QList<Category> getCategories() const;
 
 signals:
-    void categoryAdded(const QString& category);
-    void categoryRemoved(const QString& category);
+    void categoryAdded(Category category);
+    void categoryRemoved(Category category);
 
 public slots:
-    void addCategory(const QString& category);
-    void removeCategory(const QString& category);
+    void addCategory(QString name);
+    void removeCategory(Category category);
     void removeCategory(int categoryId);
 
 private:
-    QMap<int, QString> mCategories;
+    QList<Category> mCategories;
     QString mTableName;
 };

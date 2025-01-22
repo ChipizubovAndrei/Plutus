@@ -3,67 +3,69 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include <exception>
+
 #include "DatabaseManager.h"
 
 CategoryManager::CategoryManager()
     : mTableName(DatabaseManager::getCategoryTableName())
 {
     qDebug() << "Начато создание менеджера категорий";
-    QSqlQuery query("SELECT * FROM ? OREDER BY id DESC");
-    query.addBindValue(mTableName);
-    query.exec();
-    qDebug() << "Получение данных завершилось со статусом " << query.lastError().text();
-    if (query.lastError().type() == QSqlError::NoError)
+    QSqlQuery query("SELECT * FROM :tableName OREDER BY id DESC");
+    query.bindValue(":tableName", mTableName);
+    if (query.exec())
     {
         query.setForwardOnly(true);
         while (query.next())
         {
-            mCategories[query.value(0).toInt()] = query.value(1).toString();
+            Category category;
+            category.id = query.value("id").toInt();
+            category.name = query.value("name").toString();
+            mCategories.append(category);
         }
         qDebug() << QStringLiteral("Из базы данных получено %1 категорий").arg(mCategories.size());
     }
     qDebug() << "Окончено создание менеджера категорий";
 }
 
-QMap<int, QString> CategoryManager::getCategories() const
+QList<Category> CategoryManager::getCategories() const
 {
     return mCategories;
 }
 
-void CategoryManager::addCategory(const QString& category)
+void CategoryManager::addCategory(QString name)
 {
-    qDebug() << "Начато добавление категории " << category;
-    mCategories[mCategories.keys().count()] = category;
-    QSqlQuery query("INSERT INTO ? (name) VALUES (?) ");
-    query.addBindValue(mTableName);
-    query.addBindValue(category);
+    qDebug() << "Начато добавление категории " << name;
+    Category category;
+    category.id = mCategories.size();
+    category.name = name;
+    mCategories.append(category);
+    QSqlQuery query("INSERT INTO :tableName (id, name) VALUES (:id, :name) ");
+    query.bindValue(":tableName", mTableName);
+    query.bindValue(":id", category.id);
+    query.bindValue(":name", category.name);
     if (!query.exec())
     {
-        qDebug() << "Запрос завершился с результатом " << query.lastError().text();
-    }
-    else
-    {
-        qDebug() << "Ошибка выполнения запроса";
+        throw std::exception(); // query error
     }
     emit categoryAdded(category);
     qDebug() << "Окончено добавление категории";
 }
 
-void CategoryManager::removeCategory(const QString& category)
+void CategoryManager::removeCategory(Category category)
 {
-    qDebug() << "Начато удаление категории " << category;
-    int id = mCategories.key(category);
-    mCategories.remove(id);
-    QSqlQuery query("DELETE FROM ? WHERE id = ?");
-    query.addBindValue(mTableName);
-    query.addBindValue(id);
-    if (query.exec())
+    qDebug() << "Начато удаление категории " << category.name;
+    for (int i = 0; i < mCategories.size(); ++i)
     {
-        qDebug() << "Запрос завершился с результатом " << query.lastError().text();
+        if (mCategories[i].id = category.id) mCategories.removeAt(i);
     }
-    else
+    QSqlQuery query;
+    query.prepare("DELETE FROM :tableName WHERE id = :id");
+    query.bindValue(":tableName", mTableName);
+    query.bindValue(":id", category.id);
+    if (!query.exec())
     {
-        qDebug() << "Ошибка выполнения запроса";
+        throw std::exception(); // query error
     }
     emit categoryRemoved(category);
     qDebug() << "Окончено удаление категории";
@@ -72,18 +74,21 @@ void CategoryManager::removeCategory(const QString& category)
 void CategoryManager::removeCategory(int categoryId)
 {
     qDebug() << "Начато удаление категории " << categoryId;
-    QString category = mCategories.value(categoryId);
-    mCategories.remove(categoryId);
-    QSqlQuery query("DELETE FROM ? WHERE id = ?");
-    query.addBindValue(mTableName);
-    query.addBindValue(categoryId);
-    if (query.exec())
+    Category category;
+    for (int i = 0; i < mCategories.size(); ++i)
     {
-        qDebug() << "Запрос завершился с результатом " << query.lastError().text();
+        if (mCategories[i].id = categoryId)
+        {
+            category = mCategories[i];
+            mCategories.removeAt(i);
+        }
     }
-    else
+    QSqlQuery query("DELETE FROM :tableName WHERE id = :id");
+    query.bindValue(":tableName", mTableName);
+    query.bindValue(":id", category.id);
+    if (!query.exec())
     {
-        qDebug() << "Ошибка выполнения запроса";
+        throw std::exception(); // query error
     }
     emit categoryRemoved(category);
     qDebug() << "Окончено удаление категории";
