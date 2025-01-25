@@ -46,8 +46,8 @@ void MemberManager::addMember(Member member)
     query.bindValue(":id", member.id);
     query.bindValue(":firstName", member.firstName);
     query.bindValue(":secondName", member.secondName);
-    query.exec();
-    if (query.lastError().type() == QSqlError::NoError)
+    
+    if (query.exec())
 	{
 		emit memberAdded(member);
 	}
@@ -59,9 +59,6 @@ void MemberManager::addMember(Member member)
 
 void MemberManager::removeMember(Member member)
 {
-    throw std::exception(); // не реализовано до конца
-    // проблема с оператором сравнения
-	//mMembers.removeAll(member);
     for (int i = 0; i < mMembers.size(); ++i)
     {
         if (mMembers[i].id = member.id) mMembers.removeAt(i);
@@ -108,3 +105,11 @@ void MemberManager::updateMember(Member member)
 	}
 }
 
+int MemberManager::getMemberIdByFullName(const QString& name)
+{
+    for (const auto& member : mMembers)
+    {
+        if (member.getFullName() == name) return member.id;
+    }
+    return -1;
+}

@@ -17,4 +17,9 @@ struct Member
     {
         return id != other.id;
     }
+
+    QString getFullName() const
+    {
+        return firstName + " " + secondName;
+    }
 };

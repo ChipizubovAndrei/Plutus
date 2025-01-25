@@ -1,15 +1,16 @@
-#pragma once
+﻿#pragma once
 
 #include <QDate>
 #include <QString>
 
 struct MoneyOperation
 {
-	QDate date;
-	int srcAccountId;
-	int dstAccountId;
-	QString member;
-	QString category;
+    int id;
+	int srcAccount_id;
+	int dstAccount_id;
+	int member_id;
+	int category_id;
+    QDate date;
 	double moneyAmount;
 	QString note;
 };

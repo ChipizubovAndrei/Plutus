@@ -12,14 +12,14 @@ class OperationManager : public QObject
 public:
     OperationManager(QObject* parent = nullptr);
 
-    void addOperation(const MoneyOperation& operation);
-    void removeOperation(const MoneyOperation& operation);
-    void updateOperation(const MoneyOperation& operation);
+    void addOperation(MoneyOperation operation);
+    void removeOperation(MoneyOperation operation);
+    void updateOperation(MoneyOperation operation);
 
 signals:
-    void operationAdded(const MoneyOperation& operation);
-    void operationRemoved(const MoneyOperation& operation);
-    void operationUpdated(const MoneyOperation& operation);
+    void operationAdded(MoneyOperation operation);
+    void operationRemoved(MoneyOperation operation);
+    void operationUpdated(MoneyOperation operation);
 
 private:
     QString mOperationTableName;
