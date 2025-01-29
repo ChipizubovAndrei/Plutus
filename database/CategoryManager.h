@@ -14,6 +14,8 @@ class CategoryManager : public QObject
 public:
     CategoryManager();
     QList<Category> getCategories() const;
+    Category getCategoryByName( QString name ) const;
+    Category getCategoryById( int id ) const;
 
 signals:
     void categoryAdded(Category category);

@@ -22,7 +22,7 @@ public:
 
 	MoneyOperationDialog(QWidget *parent, Type type = Type::Outer);
 
-	MoneyOperation getMoneyOperation() const;
+	MoneyOperation getResult() const;
 
 private slots:
 	void onAmountEditingFinished();

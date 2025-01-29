@@ -105,11 +105,11 @@ void MemberManager::updateMember(Member member)
 	}
 }
 
-int MemberManager::getMemberIdByFullName(const QString& name)
+Member MemberManager::getMemberByFullName(const QString& name)
 {
     for (const auto& member : mMembers)
     {
-        if (member.getFullName() == name) return member.id;
+        if (member.getFullName() == name) return member;
     }
-    return -1;
+    return Member();
 }

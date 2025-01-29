@@ -93,3 +93,23 @@ void CategoryManager::removeCategory(int categoryId)
     emit categoryRemoved(category);
     qDebug() << "Окончено удаление категории";
 }
+
+Category CategoryManager::getCategoryById(int id) const
+{
+    for (const auto& category : mCategories)
+    {
+        if (category.id == id) return category;
+    }
+    qDebug() << "Аккаунт с id = " << id << " не существует";
+    return Category();
+}
+
+Category CategoryManager::getCategoryByName(QString name) const
+{
+    for (const auto& category : mCategories)
+    {
+        if (category.name == name) return category;
+    }
+    qDebug() << "Аккаунт с name = " << name << " не существует";
+    return Category();
+}

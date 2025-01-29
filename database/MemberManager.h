@@ -17,7 +17,7 @@ public:
 	void removeMember(Member member);
 	void updateMember(Member member);
 
-    int getMemberIdByName(const QString& name);
+    Member getMemberByFullName(const QString& name);
 
 signals:
 	void memberAdded(Member member);

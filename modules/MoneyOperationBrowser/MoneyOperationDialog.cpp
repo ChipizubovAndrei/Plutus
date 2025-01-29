@@ -5,6 +5,9 @@
 #include <QCalendarWidget>
 
 #include <AccountManager.h>
+#include <MemberManager.h>
+#include <CategoryManager.h>
+#include <OperationManager.h>
 
 MoneyOperationDialog::MoneyOperationDialog(QWidget *parent, Type type)
 	: QDialog(parent), mType(type)
@@ -91,35 +94,23 @@ void MoneyOperationDialog::onAmountEditingFinished()
 void MoneyOperationDialog::onAccept()
 {
 	QSharedPointer<AccountManager> accountManager = QSharedPointer<AccountManager>(new AccountManager());
-	if (mType == Type::Outer)
-	{
-		mResultMoneyOperation = MoneyOperation{
-			mDate->date(),
-			accountManager->getAccountByName(mDstAccount->currentText()).id,
-			NULL,
-			mMember->currentText(),
-			mCategory->currentText(),
-			mAmount->text().toDouble(),
-			mNote->text()
-		};
-	}
-	else 
-	{
-		mResultMoneyOperation = MoneyOperation{
-			mDate->date(),
-			accountManager->getAccountByName(mDstAccount->currentText()).id,
-			accountManager->getAccountByName(mSrcAccount->currentText()).id,
-			mMember->currentText(),
-			mCategory->currentText(),
-			mAmount->text().toDouble(),
-			mNote->text()
-		};
-	}
+    QSharedPointer<CategoryManager> categoryManager = QSharedPointer<CategoryManager>(new CategoryManager());
+    QSharedPointer<MemberManager> memberManager = QSharedPointer<MemberManager>(new MemberManager());
+
+    mResultMoneyOperation = MoneyOperation();
+    mResultMoneyOperation.id = -1;
+    mResultMoneyOperation.srcAccount_id = accountManager->getAccountByName(mSrcAccount->currentText()).id;
+    mResultMoneyOperation.dstAccount_id = accountManager->getAccountByName(mDstAccount->currentText()).id;
+    mResultMoneyOperation.member_id = memberManager->getMemberByFullName(mMember->currentText()).id;
+    mResultMoneyOperation.category_id = categoryManager->getCategoryByName(mCategory->currentText()).id;
+    mResultMoneyOperation.date = mDate->date();
+    mResultMoneyOperation.moneyAmount = mAmount->text().toDouble();
+    mResultMoneyOperation.note = mNote->text();
 
 	accept();
 }
 
-MoneyOperation MoneyOperationDialog::getMoneyOperation() const
+MoneyOperation MoneyOperationDialog::getResult() const
 {
 	return mResultMoneyOperation;
 }
