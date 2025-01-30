@@ -7,6 +7,19 @@
 
 #include "DatabaseManager.h"
 
+static QSharedPointer<MemberManager> memberManager;
+
+QSharedPointer<MemberManager> MemberManager::instance()
+{
+	if (!memberManager)
+	{
+		memberManager = QSharedPointer<MemberManager>(
+			new MemberManager()
+		);
+	}
+	return memberManager;
+}
+
 MemberManager::MemberManager(QObject *parent)
 	: QObject(parent),
 	mMemberTableName(DatabaseManager::getMemberTableName())

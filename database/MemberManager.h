@@ -11,7 +11,8 @@ class MemberManager : public QObject
 	Q_OBJECT
 
 public:
-    MemberManager(QObject* parent = nullptr);
+	static QSharedPointer<MemberManager> instance();
+
 	QList<Member> getMembers() const;
 	void addMember(Member member);
 	void removeMember(Member member);
@@ -23,6 +24,11 @@ signals:
 	void memberAdded(Member member);
 	void memberRemoved(Member member);
 	void memberUpdated(Member member);
+
+private:
+	MemberManager(QObject* parent = nullptr);
+	MemberManager(const MemberManager& manager);
+	MemberManager& operator=(const MemberManager& manager);
 
 private:
 	QList<Member> mMembers;

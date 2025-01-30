@@ -5,6 +5,19 @@
 
 #include "DatabaseManager.h"
 
+static QSharedPointer<AccountManager> accountManager;
+
+QSharedPointer<AccountManager> AccountManager::instance()
+{
+	if (!accountManager)
+	{
+		accountManager = QSharedPointer<AccountManager>(
+			new AccountManager()
+		);
+	}
+	return accountManager;
+}
+
 AccountManager::AccountManager(QObject *parent)
 	: QObject(parent),
 	mAccountTableName(DatabaseManager::instance()->getAccountTableName())

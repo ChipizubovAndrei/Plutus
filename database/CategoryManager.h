@@ -12,7 +12,8 @@ class CategoryManager : public QObject
 	Q_OBJECT
 
 public:
-    CategoryManager();
+    static QSharedPointer<AccountManager> instance();
+
     QList<Category> getCategories() const;
     Category getCategoryByName( QString name ) const;
     Category getCategoryById( int id ) const;
@@ -25,6 +26,11 @@ public slots:
     void addCategory(QString name);
     void removeCategory(Category category);
     void removeCategory(int categoryId);
+
+private:
+	CategoryManager();
+	CategoryManager(const CategoryManager& manager);
+	CategoryManager& operator=(const CategoryManager& manager);
 
 private:
     QList<Category> mCategories;

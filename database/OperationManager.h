@@ -10,7 +10,7 @@ class OperationManager : public QObject
 	Q_OBJECT
 
 public:
-    OperationManager(QObject* parent = nullptr);
+	static QSharedPointer<OperationManager> instance();
 
     void addOperation(MoneyOperation operation);
     void removeOperation(MoneyOperation operation);
@@ -20,6 +20,11 @@ signals:
     void operationAdded(MoneyOperation operation);
     void operationRemoved(MoneyOperation operation);
     void operationUpdated(MoneyOperation operation);
+
+private:
+    OperationManager(QObject* parent = nullptr);
+    OperationManager(const OperationManager& manager);
+	OperationManager& operator=(const OperationManager& manager);
 
 private:
     QString mOperationTableName;
