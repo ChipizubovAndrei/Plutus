@@ -93,9 +93,9 @@ void MoneyOperationDialog::onAmountEditingFinished()
 
 void MoneyOperationDialog::onAccept()
 {
-	QSharedPointer<AccountManager> accountManager = QSharedPointer<AccountManager>(new AccountManager());
-    QSharedPointer<CategoryManager> categoryManager = QSharedPointer<CategoryManager>(new CategoryManager());
-    QSharedPointer<MemberManager> memberManager = QSharedPointer<MemberManager>(new MemberManager());
+	QSharedPointer<AccountManager> accountManager = AccountManager::instance();
+    QSharedPointer<CategoryManager> categoryManager = CategoryManager::instance();
+    QSharedPointer<MemberManager> memberManager = MemberManager::instance();
 
     mResultMoneyOperation = MoneyOperation();
     mResultMoneyOperation.id = -1;

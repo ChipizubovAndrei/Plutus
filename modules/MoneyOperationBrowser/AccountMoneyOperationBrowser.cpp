@@ -53,7 +53,7 @@ void AccountMoneyOperationBrowser::onAddedButtonClicked()
 	if(dialog->exec() == QDialog::Accepted)
 	{
 		MoneyOperation result = dialog->getResult();
-        QSharedPointer<OperationManager> operationManager = QSharedPointer<OperationManager>(new OperationManager());
+        QSharedPointer<OperationManager> operationManager = OperationManager::instance();
         operationManager->addOperation(result);
         mModelAccountOperationTable->select();
 
