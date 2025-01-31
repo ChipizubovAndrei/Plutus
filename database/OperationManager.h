@@ -26,6 +26,8 @@ private:
     OperationManager(const OperationManager& manager);
 	OperationManager& operator=(const OperationManager& manager);
 
+    int getOperationCount();
+
 private:
     QString mOperationTableName;
 };

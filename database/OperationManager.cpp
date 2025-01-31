@@ -29,6 +29,10 @@ OperationManager::OperationManager(QObject *parent)
 
 void OperationManager::addOperation(MoneyOperation operation)
 {
+    if (!operation.isValid())
+    {
+        operation.id = getOperationCount();
+    }
     QSqlQuery query;
     query.prepare(
         QStringLiteral("INSERT INTO :tableName "
@@ -70,4 +74,16 @@ void OperationManager::removeOperation(MoneyOperation operation)
     {
         throw std::exception(); // remove error
     }
+}
+
+int OperationManager::getOperationCount()
+{
+    QSqlQuery query;
+    query.prepare(QString("SELECT COUNT(*) AS count FROM :tableName"));
+    query.bindValue(":tableName", mOperationTableName);
+    if (!query.exec())
+    {
+        throw std::exception(); // remove error
+    }
+    return query.value("count").toInt();
 }

@@ -13,4 +13,9 @@ struct MoneyOperation
     QDate date;
 	double moneyAmount;
 	QString note;
+
+	bool isValid()
+	{
+		return id >= 0;
+	}
 };
