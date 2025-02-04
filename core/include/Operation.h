@@ -5,16 +5,16 @@
 
 struct MoneyOperation
 {
-    int id;
-	int srcAccount_id;
-	int dstAccount_id;
-	int member_id;
-	int category_id;
-    QDate date;
-	double moneyAmount;
-	QString note;
+    int id = -1;
+	int srcAccount_id = -1;
+	int dstAccount_id = -1;
+	int member_id = -1;
+	int category_id = -1;
+    QDate date = QDate();
+	double moneyAmount = 0;
+	QString note = QString("");
 
-	bool isValid()
+	bool isValid() const
 	{
 		return id >= 0;
 	}

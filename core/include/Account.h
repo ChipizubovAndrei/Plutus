@@ -4,9 +4,9 @@
 
 struct Account
 {
-    int id;
-    QString name;
-    double moneyAmount;
+    int id = -1;
+    QString name = QString();
+    double moneyAmount = 0;
 
     bool operator==(const Account& other) const
     {
@@ -16,6 +16,11 @@ struct Account
     bool operator!=(const Account& other) const
     {
         return id != other.id;
+    }
+
+    bool isValid() const
+    {
+        return id >= 0;
     }
 };
 

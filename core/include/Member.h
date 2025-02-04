@@ -4,9 +4,9 @@
 
 struct Member
 {
-    int id;
-    QString firstName;
-    QString secondName;
+    int id = -1;
+    QString firstName = QString();
+    QString secondName = QString();
 
     bool operator==(const Member& other)
     {
@@ -21,5 +21,10 @@ struct Member
     QString getFullName() const
     {
         return firstName + " " + secondName;
+    }
+
+    bool isValid() const
+    {
+        return id >= 0;
     }
 };

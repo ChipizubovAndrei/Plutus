@@ -4,6 +4,11 @@
 
 struct Category
 {
-    int id;
-    QString name;
+    int id = -1;
+    QString name = QString();
+
+    bool isValid() const
+    {
+        return id >= 0;
+    }
 };
