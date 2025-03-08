@@ -109,11 +109,10 @@ void MoneyOperationDialog::onAccept()
 
     mResultMoneyOperation = MoneyOperation();
     mResultMoneyOperation.id = -1;
-    mResultMoneyOperation.dstAccount_id = accountManager->getAccountByName(mDstAccount->currentText()).id;
     mResultMoneyOperation.member_id = memberManager->getMemberByFullName(mMember->currentText()).id;
     mResultMoneyOperation.category_id = categoryManager->getCategoryByName(mCategory->currentText()).id;
     mResultMoneyOperation.date = mDate->date();
-    mResultMoneyOperation.moneyAmount = mAmount->text().toDouble();
+    mResultMoneyOperation.moneyAmount = static_cast<int>(mAmount->text().toDouble()*100);
     mResultMoneyOperation.note = mNote->text();
 
 	accept();

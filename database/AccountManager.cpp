@@ -47,7 +47,8 @@ AccountManager::AccountManager(QObject *parent)
                 Account account;
                 account.id = query.value("id").toInt();
                 account.name = query.value("name").toString();
-                account.moneyAmount = query.value("moneyAmount").toDouble();
+                account.moneyAmount = static_cast<int>(
+                    query.value("moneyAmount").toDouble()*100);
                 mAccounts.append(account);
             }
         }
@@ -58,7 +59,7 @@ AccountManager::AccountManager(QObject *parent)
             throw query.lastError().text(); // sql query error
         }
     }
-    catch (const std::string& ex)
+    catch (const QString& ex)
     {
         throw ex;
     }

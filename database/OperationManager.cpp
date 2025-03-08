@@ -53,11 +53,10 @@ void OperationManager::addOperation(MoneyOperation operation)
         operation.id = getOperationCount() + 1;
     }
     QSqlQuery query(
-        QString("INSERT INTO %1 (id, srcAccount_id, dstAccount_id, member_id, category_id, date, moneyAmount, note) VALUES (%2, %3, %4, %5, %6, %7, %8, %9)")
+        QString("INSERT INTO %1 (id, srcAccount_id, member_id, category_id, date, moneyAmount, note) VALUES (%2, %3, %4, %5, %6, %7, %8)")
         .arg(mOperationTableName)
         .arg(operation.id)
         .arg(operation.srcAccount_id)
-        .arg(operation.dstAccount_id)
         .arg(operation.member_id)
         .arg(operation.category_id)
         .arg(QString("'%1'").arg(operation.date.toString("dd.MM.yyyy")))
