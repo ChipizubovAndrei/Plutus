@@ -20,24 +20,19 @@ QVariant MoneyOperationTableModel::data(const QModelIndex& index, int role) cons
     {
     case Qt::DisplayRole:
     case Qt::EditRole:
-        // Какие либо преобразования с данными
-        // Например преобразование значений к определенному виду
-        if (index.column() == 0) return value.toString(); // ID операции
-        if (index.column() == 1) return value.toString(); // source account id
-        if (index.column() == 2) return value.toString(); // destination account id
-        if (index.column() == 3) return value.toString(); // memder id
-        if (index.column() == 4) return value.toString(); // category id
-        if (index.column() == 5)
+        if (index.column() == 0) return value.toString();
+        if (index.column() == 1) return value.toString();
+        if (index.column() == 2)
         {
-            // Дата совершения операции, храниться как юлианская дата
+            auto date = QDate::fromJulianDay(value.toInt());
+            qDebug() << QDate::fromJulianDay(value.toInt()).toString("dd.mm.yyyy");
             return QDate::fromJulianDay(value.toInt()).toString("dd.mm.yyyy");
         }
-        if (index.column() == 6)
+        if (index.column() == 3)
         {
-            // Сумма денег в операции
             return QString("%1").arg(value.toDouble(), 0, 'f', 2);
         }
-        if (index.column() == 7) return value.toString(); // note
+        if (index.column() == 4) return value.toString();
     default:
         return QVariant();
     }
@@ -114,7 +109,7 @@ bool MoneyOperationTableModel::setData(const QModelIndex& index, const QVariant&
 void MoneyOperationTableModel::refresh()
 {
     setQuery(QString(
-        "SELECT member_id, category_id, date, moneyAmount, note FROM %1 ORDER BY id DESC"
+        "SELECT member_id, category_id, date, moneyAmount, note FROM %1 ORDER BY id ASC"
     ).arg(mTableName));
 
     int headerIndex = 0;

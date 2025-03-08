@@ -9,10 +9,14 @@
 #include <CategoryManager.h>
 #include <OperationManager.h>
 
-MoneyOperationDialog::MoneyOperationDialog(QWidget *parent, Type type)
-	: QDialog(parent), mType(type)
+MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
+	: QDialog(parent)
 {
 	setWindowTitle("Добавить операцию по счету");
+
+    QSharedPointer<AccountManager> accountManager = AccountManager::instance();
+    QSharedPointer<CategoryManager> categoryManager = CategoryManager::instance();
+    QSharedPointer<MemberManager> memberManager = MemberManager::instance();
 
 	mDate = new QDateEdit();
 	mDate->setDate(QDate::currentDate());
@@ -21,18 +25,27 @@ MoneyOperationDialog::MoneyOperationDialog(QWidget *parent, Type type)
 
 	mDstAccount = new QComboBox();
 	mDstAccount->addItem("Счет не указан");
+    for (auto account : accountManager->getAccounts())
+    {
+        mDstAccount->addItem(account.name);
+    }
 	mDstAccount->setCurrentIndex(0);
-
-	if (mType == Type::Inner)
-	{
-		mSrcAccount = new QComboBox();
-		mSrcAccount->addItem("Счет не указан");
-		mSrcAccount->setCurrentIndex(0);
-	}
 
 	mCategory = new QComboBox();
 	mCategory->addItem("Нет категории");
+    for (auto category : categoryManager->getCategories())
+    {
+        mCategory->addItem(category.name);
+    }
 	mCategory->setCurrentIndex(0);
+
+    mMember = new QComboBox();
+    mMember->addItem("Выберете участника");
+    for (auto member : memberManager->getMembers())
+    {
+        mMember->addItem(member.getFullName());
+    }
+    mMember->setCurrentIndex(0);
 
 	mAmount = new QLineEdit();
 	QDoubleValidator* validator = new QDoubleValidator();
@@ -49,14 +62,11 @@ MoneyOperationDialog::MoneyOperationDialog(QWidget *parent, Type type)
 	mLayout->addWidget(new QLabel("Целевой счет:"), widgetIndex, 0);
 	mLayout->addWidget(mDstAccount, widgetIndex++, 1);
 
-	if (mType == Type::Inner)
-	{
-		mLayout->addWidget(new QLabel("Счет источник:"), widgetIndex, 0);
-		mLayout->addWidget(mSrcAccount, widgetIndex++, 1);
-	}
-
 	mLayout->addWidget(new QLabel("Категория:"), widgetIndex, 0);
 	mLayout->addWidget(mCategory, widgetIndex++, 1);
+
+    mLayout->addWidget(new QLabel("Участник:"), widgetIndex, 0);
+    mLayout->addWidget(mMember, widgetIndex++, 1);
 
 	mLayout->addWidget(new QLabel("Сумма:"), widgetIndex, 0);
 	mLayout->addWidget(mAmount, widgetIndex++, 1);
@@ -99,7 +109,6 @@ void MoneyOperationDialog::onAccept()
 
     mResultMoneyOperation = MoneyOperation();
     mResultMoneyOperation.id = -1;
-    mResultMoneyOperation.srcAccount_id = accountManager->getAccountByName(mSrcAccount->currentText()).id;
     mResultMoneyOperation.dstAccount_id = accountManager->getAccountByName(mDstAccount->currentText()).id;
     mResultMoneyOperation.member_id = memberManager->getMemberByFullName(mMember->currentText()).id;
     mResultMoneyOperation.category_id = categoryManager->getCategoryByName(mCategory->currentText()).id;
