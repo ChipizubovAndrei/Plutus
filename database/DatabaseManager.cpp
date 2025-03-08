@@ -3,8 +3,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
-#include <exception>
-
 static const QDir databaseDirName(QString("storage"));
 static const QString databaseName("PlutusDB.db");
 static const QString AccountTableName("Accounts");
@@ -16,13 +14,20 @@ static QSharedPointer<DatabaseManager> databaseManager;
 
 QSharedPointer<DatabaseManager> DatabaseManager::instance()
 {
-	if (!databaseManager)
-	{
-		databaseManager = QSharedPointer<DatabaseManager>(
-			new DatabaseManager()
-		);
-	}
-	return databaseManager;
+    try
+    {
+        if (!databaseManager)
+        {
+            databaseManager = QSharedPointer<DatabaseManager>(
+                new DatabaseManager()
+            );
+        }
+        return databaseManager;
+    }
+    catch (const QString& ex)
+    {
+        throw ex;
+    }
 }
 
 QString DatabaseManager::getMemberTableName()
@@ -59,8 +64,8 @@ DatabaseManager::DatabaseManager(QObject *parent)
 		qDebug() << "Нет папки " << databaseDirName.path() << " ,создаем";
 		if (!QDir::current().mkdir(databaseDirName.path()))
 		{
-			qCritical() << "Не удалось создать папку";
-			throw std::exception(); // database dir creation failed
+			qCritical() << "Не удалось создать папку для БД";
+			throw QString("Не удалось создать папку для БД"); // database dir creation failed
 		}
 	}
     connectToDatabase();
@@ -74,7 +79,7 @@ QSqlDatabase DatabaseManager::getDatabase() const
 	return mDatabase;
 }
 
-bool DatabaseManager::isConnectedToDatabase() const
+bool DatabaseManager::isConnected() const
 {
     return mDatabase.isOpen();
 }
@@ -92,7 +97,7 @@ bool DatabaseManager::connectToDatabase()
     if (!mDatabase.open())
     {
         qCritical() << "Не удалось открыть файл с базой данных";
-        throw std::exception(); // database open failed
+        throw QString("Не удалось открыть файл с базой данных"); // database open failed
     }
 
     return true;
@@ -101,7 +106,7 @@ bool DatabaseManager::connectToDatabase()
 void DatabaseManager::createTables()
 {
     // Таблица не актуальна, необходимо обновить запросы!!
-	if (isConnectedToDatabase())
+	if (isConnected())
 	{
 		QSqlQuery query;
 		query.exec(
@@ -116,7 +121,7 @@ void DatabaseManager::createTables()
 		if (query.lastError().type() != QSqlError::NoError)
 		{
 			qCritical() << query.lastError().text();
-			throw std::exception(); // create tables failed
+			throw QString("Ошибка при создании таблиц БД");
 		}
 
 		query.exec(
@@ -133,7 +138,7 @@ void DatabaseManager::createTables()
 		if (query.lastError().type() != QSqlError::NoError)
 		{
 			qCritical() << query.lastError().text();
-			throw std::exception(); // create tables failed
+			throw QString("Ошибка при создании таблиц БД");
 		}
 
 		query.exec(
@@ -146,7 +151,7 @@ void DatabaseManager::createTables()
 		if (query.lastError().type() != QSqlError::NoError)
 		{
 			qCritical() << query.lastError().text();
-			throw std::exception(); // create tables failed
+			throw QString("Ошибка при создании таблиц БД");
 		}
 
 		query.exec(
@@ -167,7 +172,7 @@ void DatabaseManager::createTables()
 		if (query.lastError().type() != QSqlError::NoError)
 		{
 			qCritical() << query.lastError().text();
-			throw std::exception(); // create tables failed
+			throw QString("Ошибка при создании таблиц БД");
 		}
 	}
 }

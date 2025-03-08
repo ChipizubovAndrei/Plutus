@@ -3,40 +3,51 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
-#include <exception>
-
 #include "DatabaseManager.h"
 
 static QSharedPointer<CategoryManager> categoryManager;
 
 QSharedPointer<CategoryManager> CategoryManager::instance()
 {
-	if (!categoryManager)
-	{
-		categoryManager = QSharedPointer<CategoryManager>(
-			new CategoryManager()
-		);
-	}
-	return categoryManager;
+    try
+    {
+	    if (!categoryManager)
+	    {
+		    categoryManager = QSharedPointer<CategoryManager>(
+			    new CategoryManager()
+		    );
+	    }
+	    return categoryManager;
+    }
+    catch (const QString& ex)
+    {
+        throw ex;
+    }
 }
 
 CategoryManager::CategoryManager()
-    : mTableName(DatabaseManager::getCategoryTableName())
+    : mCategoryTableName(DatabaseManager::getCategoryTableName())
 {
     qDebug() << "Начато создание менеджера категорий";
-    QSqlQuery query("SELECT * FROM :tableName OREDER BY id DESC");
-    query.bindValue(":tableName", mTableName);
-    if (query.exec())
+    QSqlQuery query(
+        QString("SELECT * FROM %1 ORDER BY id ASC").arg(mCategoryTableName)
+    );
+    qDebug() << query.executedQuery();
+    if (query.lastError().type() == QSqlError::NoError)
     {
-        query.setForwardOnly(true);
+        Category category;
         while (query.next())
         {
-            Category category;
             category.id = query.value("id").toInt();
             category.name = query.value("name").toString();
             mCategories.append(category);
         }
         qDebug() << QStringLiteral("Из базы данных получено %1 категорий").arg(mCategories.size());
+    }
+    else
+    {
+        qDebug() << query.lastError().text();
+        throw query.lastError().text();
     }
     qDebug() << "Окончено создание менеджера категорий";
 }
@@ -53,13 +64,13 @@ void CategoryManager::addCategory(QString name)
     category.id = mCategories.size();
     category.name = name;
     mCategories.append(category);
-    QSqlQuery query("INSERT INTO :tableName (id, name) VALUES (:id, :name) ");
-    query.bindValue(":tableName", mTableName);
-    query.bindValue(":id", category.id);
-    query.bindValue(":name", category.name);
+    QSqlQuery query("INSERT INTO ? (id, name) VALUES (?, ?) ");
+    query.bindValue(0, mCategoryTableName);
+    query.bindValue(1, category.id);
+    query.bindValue(2, category.name);
     if (!query.exec())
     {
-        throw std::exception(); // query error
+        throw query.lastError().text();
     }
     emit categoryAdded(category);
     qDebug() << "Окончено добавление категории";
@@ -68,17 +79,17 @@ void CategoryManager::addCategory(QString name)
 void CategoryManager::removeCategory(Category category)
 {
     qDebug() << "Начато удаление категории " << category.name;
+    QSqlQuery query;
+    query.prepare("DELETE FROM ? WHERE id = ?");
+    query.bindValue(0, mCategoryTableName);
+    query.bindValue(1, category.id);
+    if (!query.exec())
+    {
+        throw query.lastError().text();
+    }
     for (int i = 0; i < mCategories.size(); ++i)
     {
         if (mCategories[i].id = category.id) mCategories.removeAt(i);
-    }
-    QSqlQuery query;
-    query.prepare("DELETE FROM :tableName WHERE id = :id");
-    query.bindValue(":tableName", mTableName);
-    query.bindValue(":id", category.id);
-    if (!query.exec())
-    {
-        throw std::exception(); // query error
     }
     emit categoryRemoved(category);
     qDebug() << "Окончено удаление категории";
@@ -96,12 +107,12 @@ void CategoryManager::removeCategory(int categoryId)
             mCategories.removeAt(i);
         }
     }
-    QSqlQuery query("DELETE FROM :tableName WHERE id = :id");
-    query.bindValue(":tableName", mTableName);
-    query.bindValue(":id", category.id);
+    QSqlQuery query("DELETE FROM ? WHERE id = ?");
+    query.bindValue(0, mCategoryTableName);
+    query.bindValue(1, category.id);
     if (!query.exec())
     {
-        throw std::exception(); // query error
+        throw query.lastError().text();
     }
     emit categoryRemoved(category);
     qDebug() << "Окончено удаление категории";
@@ -113,7 +124,7 @@ Category CategoryManager::getCategoryById(int id) const
     {
         if (category.id == id) return category;
     }
-    qDebug() << "Аккаунт с id = " << id << " не существует";
+    qDebug() << "Категория с id = " << id << " не существует";
     return Category();
 }
 
@@ -123,6 +134,6 @@ Category CategoryManager::getCategoryByName(QString name) const
     {
         if (category.name == name) return category;
     }
-    qDebug() << "Аккаунт с name = " << name << " не существует";
+    qDebug() << "Категория с name = " << name << " не существует";
     return Category();
 }

@@ -19,7 +19,7 @@ public:
 	static QString getOperationTableName();
 
 	QSqlDatabase getDatabase() const;
-    bool isConnectedToDatabase() const;
+    bool isConnected() const;
     bool connectToDatabase();
 
 private:

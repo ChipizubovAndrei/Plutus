@@ -12,7 +12,7 @@ class CategoryManager : public QObject
 	Q_OBJECT
 
 public:
-    static QSharedPointer<AccountManager> instance();
+    static QSharedPointer<CategoryManager> instance();
 
     QList<Category> getCategories() const;
     Category getCategoryByName( QString name ) const;
@@ -34,5 +34,5 @@ private:
 
 private:
     QList<Category> mCategories;
-    QString mTableName;
+    QString mCategoryTableName;
 };

@@ -3,46 +3,62 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
-#include <exception>
-
 #include "DatabaseManager.h"
 
 static QSharedPointer<MemberManager> memberManager;
 
 QSharedPointer<MemberManager> MemberManager::instance()
 {
-	if (!memberManager)
-	{
-		memberManager = QSharedPointer<MemberManager>(
-			new MemberManager()
-		);
-	}
-	return memberManager;
+    try
+    {
+        if (!memberManager)
+        {
+            memberManager = QSharedPointer<MemberManager>(
+                new MemberManager()
+            );
+        }
+        return memberManager;
+    }
+    catch (const QString& ex)
+    {
+        throw ex;
+    }
 }
 
 MemberManager::MemberManager(QObject *parent)
 	: QObject(parent),
 	mMemberTableName(DatabaseManager::getMemberTableName())
 {
-	//get data from database
-	QSqlQuery query(QString("SELECT name FROM %1 ORDER BY name ASC")
+    try
+    {
+        auto databaseManager = DatabaseManager::instance();
+        if (!databaseManager->isConnected())
+        {
+            databaseManager->connectToDatabase();
+        }
+    }
+    catch (const QString& ex)
+    {
+        throw ex;
+    }
+
+	QSqlQuery query(QString("SELECT * FROM %1 ORDER BY id ASC")
 		.arg(mMemberTableName)
 	);
 	if (query.lastError().type() == QSqlError::NoError)
 	{
-		query.setForwardOnly(true);
 		while (query.next())
 		{
             Member member;
             member.id = query.value("id").toInt();
-            member.firstName = query.value("firstName").toString();
-            member.secondName = query.value("secondName").toString();
+            member.firstName = query.value("first_name").toString();
+            member.secondName = query.value("second_name").toString();
 			mMembers.append(member);
 		}
 	}
 	else
 	{
-		throw std::exception(); // sql query error
+		throw query.lastError().text();
 	}
 }
 
@@ -53,45 +69,54 @@ QList<Member> MemberManager::getMembers() const
 
 void MemberManager::addMember(Member member)
 {
-	mMembers.append(member);
+    if (!member.isValid()) return;
     QSqlQuery query;
-    query.prepare(QString("INSERT INTO :tableName (id, firstName, secondName) VALUES (:id, :firstName, :secondName)"));
-    query.bindValue(":id", member.id);
-    query.bindValue(":firstName", member.firstName);
-    query.bindValue(":secondName", member.secondName);
+    query.prepare(QString("INSERT INTO ? (id, firstName, secondName) VALUES (?, ?, ?)"));
+    query.bindValue(0, member.id);
+    query.bindValue(1, member.firstName);
+    query.bindValue(2, member.secondName);
     
-    if (query.exec())
+    if (!query.exec())
 	{
-		emit memberAdded(member);
+		throw query.lastError().text();
 	}
-	else
-	{
-		throw std::exception(); // insert error
-	}
+    mMembers.append(member);
+    emit memberAdded(member);
 }
 
 void MemberManager::removeMember(Member member)
 {
+    if (!member.isValid()) return;
+    QSqlQuery query;
+    query.prepare(QString("DELETE FROM ? WHERE id = ?"));
+    query.bindValue(0, mMemberTableName);
+    query.bindValue(1, member.id);
+	if (!query.exec())
+	{
+		throw query.lastError().text(); // remove error
+	}
     for (int i = 0; i < mMembers.size(); ++i)
     {
         if (mMembers[i].id = member.id) mMembers.removeAt(i);
     }
-    QSqlQuery query;
-    query.prepare(QString("DELETE FROM :tableName WHERE id = :id"));
-    query.bindValue(":tableName", mMemberTableName);
-    query.bindValue(":id", member.id);
-	if (query.exec())
-	{
-		emit memberRemoved(member);
-	}
-	else
-	{
-		throw std::exception(); // remove error
-	}
+    emit memberRemoved(member);
 }
 
 void MemberManager::updateMember(Member member)
 {
+    if (!member.isValid()) return;
+    QSqlQuery query;
+    query.prepare(QString(
+        "UPDATE ? SET firstName = ?, secondName = ? WHERE id = ?"));
+    query.bindValue(0, mMemberTableName);
+    query.bindValue(1, member.firstName);
+    query.bindValue(2, member.secondName);
+    query.bindValue(3, member.id);
+    
+	if (!query.exec())
+	{
+		throw QString(query.lastError().text()); // remove error
+	}
     for (int i = 0; i < mMembers.size(); ++i)
     {
         if (mMembers[i].id == member.id)
@@ -100,22 +125,7 @@ void MemberManager::updateMember(Member member)
             break;
         }
     }
-    QSqlQuery query;
-    query.prepare(QString(
-        "UPDATE :tableName SET firstName = :firstName, secondName = :firstName WHERE id = :id"));
-    query.bindValue(":tableName", mMemberTableName);
-    query.bindValue(":firstName", member.firstName);
-    query.bindValue(":secondName", member.secondName);
-    query.bindValue(":id", member.id);
-    query.exec();
-	if (query.lastError().type() == QSqlError::NoError)
-	{
-		emit memberUpdated(member);
-	}
-	else
-	{
-		throw std::exception(); // remove error
-	}
+    emit memberUpdated(member);
 }
 
 Member MemberManager::getMemberByFullName(const QString& name)
