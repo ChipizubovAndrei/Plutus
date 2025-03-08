@@ -25,8 +25,8 @@ QVariant MoneyOperationTableModel::data(const QModelIndex& index, int role) cons
         if (index.column() == 2)
         {
             auto date = QDate::fromJulianDay(value.toInt());
-            qDebug() << QDate::fromJulianDay(value.toInt()).toString("dd.mm.yyyy");
-            return QDate::fromJulianDay(value.toInt()).toString("dd.mm.yyyy");
+            qDebug() << value.toString();
+            return value.toString();
         }
         if (index.column() == 3)
         {

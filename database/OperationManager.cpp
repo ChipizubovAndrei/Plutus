@@ -60,9 +60,9 @@ void OperationManager::addOperation(MoneyOperation operation)
         .arg(operation.dstAccount_id)
         .arg(operation.member_id)
         .arg(operation.category_id)
-        .arg(operation.date.toJulianDay())
+        .arg(QString("'%1'").arg(operation.date.toString("dd.MM.yyyy")))
         .arg(operation.moneyAmount)
-        .arg(QString("'") + operation.note + QString("'"))
+        .arg(QString("'%1'").arg(operation.note))
     );
     qDebug() << query.executedQuery();
     if (query.lastError().type() != QSqlError::NoError)
