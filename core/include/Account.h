@@ -6,7 +6,7 @@ struct Account
 {
     int id = -1;
     QString name = QString();
-    double moneyAmount = 0;
+    int moneyAmount = 0;
 
     bool operator==(const Account& other) const
     {

@@ -25,8 +25,6 @@ QVariant MoneyOperationTableModel::data(const QModelIndex& index, int role) cons
         if (index.column() == 2) return value.toString(); // счет
         if (index.column() == 3) // дата
         {
-            auto date = QDate::fromString(value.toString());
-            qDebug() << value.toString();
             return value.toString();
         }
         if (index.column() == 4) // сумма

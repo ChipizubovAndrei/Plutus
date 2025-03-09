@@ -48,8 +48,7 @@ AccountManager::AccountManager(QObject *parent)
                 Account account;
                 account.id = query.value("id").toInt();
                 account.name = query.value("name").toString();
-                account.moneyAmount = static_cast<int>(
-                    query.value("moneyAmount").toDouble()*100);
+                account.moneyAmount = query.value("moneyAmount").toInt();
                 mAccounts.append(account);
             }
 
@@ -142,6 +141,7 @@ void AccountManager::onOperationAdded(const MoneyOperation& operation)
     auto updatedAccount = getAccountById(operation.srcAccount_id);
     qDebug() << "Старый счет на аккаунте " << updatedAccount.id << " = "
         << updatedAccount.moneyAmount;
+    qDebug() << "Сумма операции = " << operation.moneyAmount;
     updatedAccount.moneyAmount += operation.moneyAmount;
     qDebug() << "Новый счет на аккаунте " << updatedAccount.id << " = "
         << updatedAccount.moneyAmount;
