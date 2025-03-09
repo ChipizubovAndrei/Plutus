@@ -5,6 +5,9 @@
 #include <QSqlError>
 
 #include <DatabaseManager.h>
+#include <AccountManager.h>
+#include <MemberManager.h>
+#include <CategoryManager.h>
 
 MoneyOperationTableModel::MoneyOperationTableModel()
     : mTableName(DatabaseManager::getOperationTableName())
@@ -20,9 +23,19 @@ QVariant MoneyOperationTableModel::data(const QModelIndex& index, int role) cons
     {
     case Qt::DisplayRole:
     case Qt::EditRole:
-        if (index.column() == 0) return value.toString(); // участник
-        if (index.column() == 1) return value.toString(); // категория
-        if (index.column() == 2) return value.toString(); // счет
+        if (index.column() == 0) // участник
+        {
+            return value.toString(); 
+        }
+        if (index.column() == 1) // категория
+        {
+            return value.toString();
+        }
+        if (index.column() == 2) // счет
+        {
+            return AccountManager::instance()->getAccountById(value.toInt()).name;
+            //return value.toString(); 
+        }
         if (index.column() == 3) // дата
         {
             return value.toString();
