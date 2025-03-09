@@ -4,6 +4,7 @@
 #include <QSqlError>
 
 #include "DatabaseManager.h"
+#include "OperationManager.h"
 
 static QSharedPointer<AccountManager> accountManager;
 
@@ -51,6 +52,14 @@ AccountManager::AccountManager(QObject *parent)
                     query.value("moneyAmount").toDouble()*100);
                 mAccounts.append(account);
             }
+
+            auto operationManager = OperationManager::instance();
+            connect(operationManager.data(), &OperationManager::operationAdded,
+                this, &AccountManager::onOperationAdded);
+            connect(operationManager.data(), &OperationManager::operationRemoved,
+                this, &AccountManager::onOperationRemoved);
+            connect(operationManager.data(), &OperationManager::operationUpdated,
+                this, &AccountManager::onOperationUpdated);
         }
         else
         {
@@ -71,12 +80,12 @@ void AccountManager::addAccount(Account account)
 {
     qDebug() << "Начато добавление аккаунта " << account.id;
     if (!account.isValid()) account.id = mAccounts.size();
-    QSqlQuery query;
-    query.prepare(QString("INSERT INTO ? (id, name, moneyAmount) VALUES (?, ?, ?)"));
-    query.bindValue(0, mAccountTableName);
-    query.bindValue(1, account.id);
-    query.bindValue(2, account.name);
-    query.bindValue(3, account.moneyAmount);
+    QSqlQuery query(QString("INSERT INTO %1 (id, name, moneyAmount) VALUES (%2, %3, %4)")
+        .arg(mAccountTableName)
+        .arg(account.id)
+        .arg(account.name)
+        .arg(account.moneyAmount)
+    );
     if (!query.exec())
     {
         throw query.lastError().text();
@@ -89,12 +98,13 @@ void AccountManager::addAccount(Account account)
 void AccountManager::removeAccount(Account account)
 {
     qDebug() << "Начато удаление аккаунта " << account.name;
-    QSqlQuery query;
-    query.prepare("DELETE FROM ? WHERE id = ?");
-    query.bindValue(0, mAccountTableName);
-    query.bindValue(1, account.id);
-    if (!query.exec())
+    QSqlQuery query(QString("DELETE FROM %1 WHERE id = %2")
+        .arg(mAccountTableName)
+        .arg(account.id)
+    );
+    if (query.exec())
     {
+        qWarning() << query.lastError().text();
         throw query.lastError().text();
     }
 	mAccounts.removeAll(account);
@@ -125,4 +135,45 @@ Account AccountManager::getAccountByName(const QString& name) const
 QList<Account> AccountManager::getAccounts() const
 {
     return mAccounts;
+}
+
+void AccountManager::onOperationAdded(const MoneyOperation& operation)
+{
+    auto updatedAccount = getAccountById(operation.srcAccount_id);
+    qDebug() << "Старый счет на аккаунте " << updatedAccount.id << " = "
+        << updatedAccount.moneyAmount;
+    updatedAccount.moneyAmount += operation.moneyAmount;
+    qDebug() << "Новый счет на аккаунте " << updatedAccount.id << " = "
+        << updatedAccount.moneyAmount;
+
+    for (int i = 0; i < mAccounts.size(); ++i)
+    {
+        if (mAccounts[i].id == updatedAccount.id)
+        {
+            mAccounts[i] = updatedAccount;
+            break;
+        }
+    }
+
+    QSqlQuery query(QString("UPDATE %1 SET moneyAmount = %2 WHERE id = %3")
+        .arg(mAccountTableName)
+        .arg(updatedAccount.moneyAmount)
+        .arg(updatedAccount.id)
+    );
+    if (query.lastError().type() != QSqlError::NoError)
+    {
+        throw query.lastError().text();
+    }
+}
+
+
+void AccountManager::onOperationRemoved(const MoneyOperation& operation)
+{
+
+}
+
+void AccountManager::onOperationUpdated(const MoneyOperation& prevOperation,
+                        const MoneyOperation& newOperation)
+{
+
 }

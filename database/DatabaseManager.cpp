@@ -195,7 +195,7 @@ QSqlQuery DatabaseManager::execSqlQuery(const QString& queryStr)
         connectToDatabase();
 
     QSqlQuery query(queryStr);
-    if (!query.exec())
+    if (query.lastError().type() != QSqlError::NoError)
     {
         qWarning() << query.lastError().text();
         throw query.lastError().text();

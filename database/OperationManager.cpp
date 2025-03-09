@@ -80,7 +80,7 @@ int OperationManager::getOperationCount()
 {
     qDebug() << "start OperationManager::getOperationCount";
     auto query = mDatabaseManager->execSqlQuery(
-        QString("SELECT COUNT(*) FROM %1")
+        QString("SELECT MAX(id) FROM %1")
             .arg(mOperationTableName)
     );
     query.next();

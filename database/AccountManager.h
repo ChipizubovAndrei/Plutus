@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 
 #include <Account.h>
+#include <Operation.h>
 
 class AccountManager : public QObject
 {
@@ -18,6 +19,12 @@ public:
 	QList<Account> getAccounts() const;
 	Account getAccountById(int id) const;
 	Account getAccountByName(const QString& name) const;
+
+private slots:
+    void onOperationAdded(const MoneyOperation& operation);
+    void onOperationRemoved(const MoneyOperation& operation);
+    void onOperationUpdated(const MoneyOperation& prevOperation,
+        const MoneyOperation& newOperation);
 
 signals:
 	void accountAdded(Account account);
