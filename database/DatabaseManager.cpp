@@ -176,3 +176,20 @@ void DatabaseManager::createTables()
 		}
 	}
 }
+
+void DatabaseManager::execSqlQuery(QSqlQuery& query)
+{
+    if (!isConnected())
+        connectToDatabase();
+
+    if (!query.exec())
+    {
+        qWarning() << query.lastError().text();
+        throw query.lastError().text();
+    }
+}
+
+void DatabaseManager::execSqlQuery(const QString& queryStr)
+{
+
+}

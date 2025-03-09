@@ -22,6 +22,9 @@ public:
     bool isConnected() const;
     bool connectToDatabase();
 
+    void execSqlQuery(const QSqlQuery& query);
+    void execSqlQuery(const QString& queryStr);
+
 private:
 	DatabaseManager(QObject *parent=nullptr);
 	DatabaseManager(const DatabaseManager& manager);
