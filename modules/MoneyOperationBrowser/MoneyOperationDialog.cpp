@@ -49,6 +49,8 @@ MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
 
 	mAmount = new QLineEdit();
 	QDoubleValidator* validator = new QDoubleValidator();
+    validator->setDecimals(2);
+    validator->setLocale(QLocale::C);
 	validator->setNotation(QDoubleValidator::StandardNotation);
 	mAmount->setValidator(validator);
 
