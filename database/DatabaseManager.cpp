@@ -189,7 +189,16 @@ void DatabaseManager::execSqlQuery(QSqlQuery& query)
     }
 }
 
-void DatabaseManager::execSqlQuery(const QString& queryStr)
+QSqlQuery DatabaseManager::execSqlQuery(const QString& queryStr)
 {
+    if (!isConnected())
+        connectToDatabase();
 
+    QSqlQuery query(queryStr);
+    if (!query.exec())
+    {
+        qWarning() << query.lastError().text();
+        throw query.lastError().text();
+    }
+    return query;
 }

@@ -4,6 +4,7 @@
 #include <QSharedPointer>
 
 #include <Operation.h>
+#include "DatabaseManager.h"
 
 class OperationManager : public QObject
 {
@@ -19,7 +20,8 @@ public:
 signals:
     void operationAdded(MoneyOperation operation);
     void operationRemoved(MoneyOperation operation);
-    void operationUpdated(MoneyOperation operation);
+    void operationUpdated(MoneyOperation prevOperation,
+        MoneyOperation newOperation);
 
 private:
     OperationManager(QObject* parent = nullptr);
@@ -30,4 +32,5 @@ private:
 
 private:
     QString mOperationTableName;
+    QSharedPointer<DatabaseManager> mDatabaseManager;
 };

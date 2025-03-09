@@ -4,7 +4,7 @@
 #include <QSqlError>
 #include <QString>
 
-#include "DatabaseManager.h"
+#include <iostream>
 
 static QSharedPointer<OperationManager> operationManager;
 
@@ -28,15 +28,14 @@ QSharedPointer<OperationManager> OperationManager::instance()
 }
 
 OperationManager::OperationManager(QObject *parent)
-	: QObject(parent)
+	: QObject(parent), mDatabaseManager(DatabaseManager::instance())
 {
     mOperationTableName = DatabaseManager::getOperationTableName();
     try
     {
-        auto databaseManager = DatabaseManager::instance();
-        if (!databaseManager->isConnected())
+        if (!mDatabaseManager->isConnected())
         {
-            databaseManager->connectToDatabase();
+            mDatabaseManager->connectToDatabase();
         }
     }
     catch (const QString& ex)
@@ -52,55 +51,39 @@ void OperationManager::addOperation(MoneyOperation operation)
     {
         operation.id = getOperationCount() + 1;
     }
-    QSqlQuery query(
+    mDatabaseManager->execSqlQuery(
         QString("INSERT INTO %1 (id, srcAccount_id, member_id, category_id, date, moneyAmount, note) VALUES (%2, %3, %4, %5, %6, %7, %8)")
-        .arg(mOperationTableName)
-        .arg(operation.id)
-        .arg(operation.srcAccount_id)
-        .arg(operation.member_id)
-        .arg(operation.category_id)
-        .arg(QString("'%1'").arg(operation.date.toString("dd.MM.yyyy")))
-        .arg(operation.moneyAmount)
-        .arg(QString("'%1'").arg(operation.note))
+            .arg(mOperationTableName)
+            .arg(operation.id)
+            .arg(operation.srcAccount_id)
+            .arg(operation.member_id)
+            .arg(operation.category_id)
+            .arg(QString("'%1'").arg(operation.date.toString("dd.MM.yyyy")))
+            .arg(operation.moneyAmount)
+            .arg(QString("'%1'").arg(operation.note))
     );
-    qDebug() << query.executedQuery();
-    if (query.lastError().type() != QSqlError::NoError)
-    {
-        qWarning() << query.lastError().text();
-        throw query.lastError().text();
-    }
     emit operationAdded(operation);
 }
 
 void OperationManager::removeOperation(MoneyOperation operation)
 {
     if (!operation.isValid()) return;
-    QSqlQuery query(
+    mDatabaseManager->execSqlQuery(
         QString("DELETE FROM %1 WHERE id = %2")
-        .arg(mOperationTableName)
-        .arg(operation.id)
+            .arg(mOperationTableName)
+            .arg(operation.id)
     );
-    if (query.lastError().type() != QSqlError::NoError)
-    {
-        qWarning() << query.lastError().text();
-        throw query.lastError().text();
-    }
     emit operationRemoved(operation);
 }
 
 int OperationManager::getOperationCount()
 {
     qDebug() << "start OperationManager::getOperationCount";
-    QSqlQuery query(
+    auto query = mDatabaseManager->execSqlQuery(
         QString("SELECT COUNT(*) FROM %1")
-        .arg(mOperationTableName)
+            .arg(mOperationTableName)
     );
-    qDebug() << query.executedQuery();
-    if (query.lastError().type() != QSqlError::NoError)
-    {
-        qWarning() << query.lastError().text();
-        throw query.lastError().text();
-    }
     query.next();
+    qDebug() << "operation coint = " << query.value(0).toInt();
     return query.value(0).toInt();
 }
