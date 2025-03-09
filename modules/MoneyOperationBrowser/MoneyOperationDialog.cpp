@@ -23,13 +23,13 @@ MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
 	mDate->setCalendarPopup(true);
 	mDate->setCalendarWidget(new QCalendarWidget());
 
-	mDstAccount = new QComboBox();
-	mDstAccount->addItem("Счет не указан");
+    mSrcAccount = new QComboBox();
+    mSrcAccount->addItem("Счет не указан");
     for (auto account : accountManager->getAccounts())
     {
-        mDstAccount->addItem(account.name);
+        mSrcAccount->addItem(account.name);
     }
-	mDstAccount->setCurrentIndex(0);
+    mSrcAccount->setCurrentIndex(0);
 
 	mCategory = new QComboBox();
 	mCategory->addItem("Нет категории");
@@ -60,7 +60,7 @@ MoneyOperationDialog::MoneyOperationDialog(QWidget *parent)
 	mLayout->addWidget(mDate, widgetIndex++, 1);
 
 	mLayout->addWidget(new QLabel("Целевой счет:"), widgetIndex, 0);
-	mLayout->addWidget(mDstAccount, widgetIndex++, 1);
+	mLayout->addWidget(mSrcAccount, widgetIndex++, 1);
 
 	mLayout->addWidget(new QLabel("Категория:"), widgetIndex, 0);
 	mLayout->addWidget(mCategory, widgetIndex++, 1);
@@ -109,6 +109,7 @@ void MoneyOperationDialog::onAccept()
 
     mResultMoneyOperation = MoneyOperation();
     mResultMoneyOperation.id = -1;
+    mResultMoneyOperation.srcAccount_id = accountManager->getAccountByName(mSrcAccount->currentText()).id;
     mResultMoneyOperation.member_id = memberManager->getMemberByFullName(mMember->currentText()).id;
     mResultMoneyOperation.category_id = categoryManager->getCategoryByName(mCategory->currentText()).id;
     mResultMoneyOperation.date = mDate->date();

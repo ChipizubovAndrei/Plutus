@@ -28,7 +28,7 @@ private:
 	QDateEdit* mDate;
 	QComboBox* mCategory;
 	QComboBox* mMember;
-	QComboBox* mDstAccount;
+	QComboBox* mSrcAccount;
 	QLineEdit* mAmount;
 	QLineEdit* mNote;
 

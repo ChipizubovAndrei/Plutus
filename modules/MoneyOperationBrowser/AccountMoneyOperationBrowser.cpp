@@ -7,6 +7,7 @@
 
 #include <DatabaseManager.h>
 #include <OperationManager.h>
+#include <AccountManager.h>
 
 #include "MoneyOperationDialog.h"
 
@@ -48,10 +49,18 @@ void AccountMoneyOperationBrowser::onAddedButtonClicked()
 	MoneyOperationDialog* dialog = new MoneyOperationDialog(this);
 	if(dialog->exec() == QDialog::Accepted)
 	{
-		MoneyOperation result = dialog->getResult();
-        QSharedPointer<OperationManager> operationManager = OperationManager::instance();
-        operationManager->addOperation(result);
-        mModelAccountOperationTable->refresh();
+        try
+        {
+            MoneyOperation result = dialog->getResult();
+            QSharedPointer<OperationManager> operationManager = OperationManager::instance();
+            operationManager->addOperation(result);
+            mModelAccountOperationTable->refresh();
+        }
+        catch (const QString& ex)
+        {
+            QMessageBox::critical( this, "Ошибка", ex, QMessageBox::Ok);
+        }
+
 	}
 }
 
